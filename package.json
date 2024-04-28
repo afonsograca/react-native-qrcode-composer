@@ -1,0 +1,13 @@
+{
+  "name": "react-native-qrcode-composer",
+  "version": "0.1.0",
+  "scripts": {
+    "build": "tsc"
+  },
+  "main": "lib/index.js",
+  "license": "MIT",
+  "devDependencies": {
+    "react-native": "^0.74.0",
+    "typescript": "^5.4.5"
+  }
+}
