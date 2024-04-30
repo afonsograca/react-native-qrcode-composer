@@ -4,6 +4,7 @@
   "scripts": {
     "build": "tsc",
     "lint": "eslint . --ext .ts,.tsx",
+    "test": "jest"
   },
   "main": "lib/index.js",
   "license": "MIT",
@@ -12,10 +13,16 @@
   },
   "devDependencies": {
     "@babel/core": "^7.24.5",
+    "@testing-library/jest-native": "^5.4.3",
+    "@testing-library/react-native": "^12.5.0",
+    "@types/jest": "^29.5.12",
     "@typescript-eslint/eslint-plugin": "^7.8.0",
     "@typescript-eslint/parser": "^7.8.0",
+    "babel-jest": "^29.7.0",
+    "jest": "^29.7.0",
     "metro-react-native-babel-preset": "^0.77.0",
     "react-native": "^0.74.0",
+    "ts-jest": "^29.1.2",
     "typescript": "^5.4.5"
   }
 }
