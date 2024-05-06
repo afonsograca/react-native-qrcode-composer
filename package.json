@@ -11,6 +11,11 @@
   "engines": {
     "node": ">=18.0.0"
   },
+  "peerDependencies": {
+    "react": ">=17.0.1",
+    "react-native": ">=0.64.0",
+    "react-native-svg": ">=13.2.0"
+  },
   "devDependencies": {
     "@babel/core": "^7.24.5",
     "@testing-library/jest-native": "^5.4.3",
