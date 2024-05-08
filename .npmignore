@@ -1,0 +1,55 @@
+# Dependency directories
+node_modules/
+
+# Example app
+example/
+
+# Version control system
+.git/
+.gitignore
+
+# Configuration files
+.babelrc
+.eslintrc.js
+.prettierrc
+.buckconfig
+.watchmanconfig
+.flowconfig
+.typedoc.json
+.tslint.json
+
+# IDE/Editor directories
+.idea/
+.vscode/
+*.swp
+*.swo
+*.sublime-project
+*.sublime-workspace
+
+# Testing and Coverage
+__tests__/
+coverage/
+*.test.js
+*.spec.js
+
+# Build output
+dist/
+build/
+out/
+
+# Documentation source
+docs-src/
+
+# Miscellaneous files
+.DS_Store
+*.log
+*.env
+*.env.local
+*.env.development.local
+*.env.test.local
+*.env.production.local
+yarn-error.log
+npm-debug.log
+
+# OS generated files
+Thumbs.db
