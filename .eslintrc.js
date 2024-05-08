@@ -1,25 +1,30 @@
 module.exports = {
   root: true,
-  parser: "@typescript-eslint/parser",
+  parser: '@typescript-eslint/parser',
   extends: [
-    "@react-native-community",
-    "plugin:@typescript-eslint/recommended",
+    '@react-native-community',
+    'eslint:recommended',
+    'plugin:@typescript-eslint/recommended',
+    'prettier',
   ],
+  plugins: ['@typescript-eslint', 'prettier'],
   rules: {
-    "@typescript-eslint/consistent-type-imports": "error",
-    "import/order": [
-      "error",
+    '@typescript-eslint/consistent-type-imports': 'error',
+    '@typescript-eslint/semi': 'error',
+    'import/order': [
+      'error',
       {
         pathGroups: [
           {
             pattern: `{${internalModulesGlob}}`,
-            group: "external",
-            position: "after",
+            group: 'external',
+            position: 'after',
           },
         ],
         pathGroupsExcludedImportTypes: [],
-        "newlines-between": "always",
+        'newlines-between': 'always',
       },
     ],
+    'prettier/prettier': 'error',
   },
 };
