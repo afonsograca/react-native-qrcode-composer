@@ -17,6 +17,7 @@ interface PatternOptions {
 }
 
 interface DetectionMarkerOptions {
+  connected?: boolean;
   cornerRadius?: number;
   outerCornerRadius?: number;
   innerCornerRadius?: number;
@@ -84,7 +85,7 @@ const generateDetectionMarkerPath = (
   const [px, py] = [position[0] * cellSize, position[1] * cellSize];
 
   const outerSize = cellSize * 7;
-  const padding = cellSize; 
+  const padding = cellSize;
   const fillerSize = cellSize * 5;
   const centerPadding = cellSize * 2;
   const innerSize = cellSize * 3;
@@ -107,7 +108,8 @@ const generateDetectionMarkerPath = (
     ),
   );
 
-  const outerRadius = outerSize * outerCornerRadiusPercentage * MAX_CORNER_RADIUS;
+  const outerRadius =
+    outerSize * outerCornerRadiusPercentage * MAX_CORNER_RADIUS;
   const fillerRadius =
     fillerSize * outerCornerRadiusPercentage * MAX_CORNER_RADIUS;
   const innerRadius =
@@ -127,18 +129,22 @@ const generatePathFromMatrix = (
   patternOptions?: PatternOptions,
 ): PathResult => {
   if (!matrix.length) throw new Error('Matrix cannot be empty');
-  let path = '';
   const cellSize = size / matrix.length;
-  const patternCornerRadius = cellSize * (patternOptions?.cornerRadius ?? 0.0);
-  const cornerRadius = cellSize * (detectionMarkerOptions?.cornerRadius ?? 0);
+  const patternCornerRadiusPercentage = Math.max(
+    0,
+    Math.min(1, patternOptions?.cornerRadius ?? DEFAULT_CORNER_RADIUS),
+  );
+  const patternCornerRadius =
+    cellSize * patternCornerRadiusPercentage * MAX_CORNER_RADIUS;
 
-  matrix.forEach((row, y) => {
-    let startSegment = null;
-
+  const path = matrix.reduce((acc, row, y) => {
     for (let x = 0; x < row.length; x++) {
-      if (isDrawingDetectionMarker(x, y, matrix.length)) {
+      if (
+        (detectionMarkerOptions?.connected ?? true) &&
+        isDrawingDetectionMarker(x, y, matrix.length)
+      ) {
         if (isDetectionMarkerStartingPoint(x, y, matrix.length)) {
-          path += generateDetectionMarkerPath(
+          acc += generateDetectionMarkerPath(
             [x, y],
             cellSize,
             detectionMarkerOptions,
@@ -147,33 +153,17 @@ const generatePathFromMatrix = (
         }
       } else {
         if (row[x]) {
-          // This module is black
-          if (startSegment === null) {
-            startSegment = x;
-          }
-          if (x === row.length - 1 || !row[x + 1]) {
-            // Last in a row or next module is white: Draw segment from startSegment to x
-            const startX = startSegment * cellSize;
-            const endX = (x + 1) * cellSize;
-            const topY = y * cellSize;
-            const bottomY = (y + 1) * cellSize;
-            path +=
-              `M${startX} ${topY + cornerRadius} ` +
-              `A${cornerRadius},${cornerRadius} 0 0 1 ${startX + cornerRadius},${topY} ` +
-              `H${endX - cornerRadius} ` +
-              `A${cornerRadius},${cornerRadius} 0 0 1 ${endX},${topY + cornerRadius} ` +
-              `V${bottomY - cornerRadius} ` +
-              `A${cornerRadius},${cornerRadius} 0 0 1 ${endX - cornerRadius},${bottomY} ` +
-              `H${startX + cornerRadius} ` +
-              `A${cornerRadius},${cornerRadius} 0 0 1 ${startX},${bottomY - cornerRadius} Z `;
-            startSegment = null; // Reset start of segment
-          }
-        } else {
-          startSegment = null; // Not continuing a segment
+          acc += generateSquarePath(
+            x * cellSize,
+            y * cellSize,
+            cellSize,
+            patternCornerRadius,
+          );
         }
       }
     }
-  });
+    return acc;
+  }, '');
 
   return {cellSize, path};
 };
