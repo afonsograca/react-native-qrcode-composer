@@ -31,6 +31,13 @@ interface QRCodeOptions {
   patternOptions?: PatternOptions;
 }
 
+interface CornerRadius {
+  topLeft: boolean;
+  topRight: boolean;
+  bottomLeft: boolean;
+  bottomRight: boolean;
+}
+
 interface PathResult {
   cellSize: number;
   path: string;
@@ -69,18 +76,69 @@ const isDetectionMarkerStartingPoint = (
   (row === 0 && (column === 0 || column === size - 7)) ||
   (row === size - 7 && column === 0);
 
-const generateSquarePath = (
+interface GenerateSquarePathProps {
+  position: Position;
+  size: number;
+  cornerRadius: number;
+  padding?: number;
+  unitSize?: number;
+  cornersWithRadius?: CornerRadius;
+}
+
+const generateSquarePath = ({
+  position,
+  size,
+  cornerRadius,
+  padding = 0,
+  unitSize = size,
+  cornersWithRadius = {
+    topLeft: true,
+    topRight: true,
+    bottomLeft: true,
+    bottomRight: true,
+  },
+}: GenerateSquarePathProps): string => {
+  const getRadius = (corner: keyof typeof cornersWithRadius) =>
+    cornersWithRadius[corner] ? cornerRadius : 0;
+  const topRightCorner = `a${cornerRadius},${cornerRadius} 0 0 1 ${cornerRadius},${cornerRadius} `;
+  const bottomRightCorner = `a${cornerRadius},${cornerRadius} 0 0 1 -${cornerRadius},${cornerRadius} `;
+  const bottomLeftCorner = `a${cornerRadius},${cornerRadius} 0 0 1 -${cornerRadius},-${cornerRadius} `;
+  const topLeftCorner = `a${cornerRadius},${cornerRadius} 0 0 1 ${cornerRadius},-${cornerRadius} `;
+
+  return (
+    `M ${position.x * unitSize + padding + getRadius('topLeft')},${position.y * unitSize + padding} ` +
+    `h ${size - getRadius('topLeft') - getRadius('topRight')} ` +
+    (cornersWithRadius.topRight ? topRightCorner : '') +
+    `v ${size - getRadius('topRight') - getRadius('bottomRight')} ` +
+    (cornersWithRadius.bottomRight ? bottomRightCorner : '') +
+    `h -${size - getRadius('bottomRight') - getRadius('bottomLeft')} ` +
+    (cornersWithRadius.bottomLeft ? bottomLeftCorner : '') +
+    `v -${size - getRadius('bottomLeft') - getRadius('topLeft')} ` +
+    (cornersWithRadius.topLeft ? topLeftCorner : '') +
+    `Z`
+  );
+};
+
+const cornersToRadius = (
   position: Position,
-  size: number,
-  cornerRadius: number,
-  padding: number = 0,
-  unitSize: number = size,
-): string =>
-  `M ${(position.x * unitSize) + padding + cornerRadius},${(position.y * unitSize) + padding} ` +
-  `h ${size - 2 * cornerRadius} a${cornerRadius},${cornerRadius} 0 0 1 ${cornerRadius},${cornerRadius} ` +
-  `v ${size - 2 * cornerRadius} a${cornerRadius},${cornerRadius} 0 0 1 -${cornerRadius},${cornerRadius} ` +
-  `h -${size - 2 * cornerRadius} a${cornerRadius},${cornerRadius} 0 0 1 -${cornerRadius},-${cornerRadius} ` +
-  `v -${size - 2 * cornerRadius} a${cornerRadius},${cornerRadius} 0 0 1 ${cornerRadius},-${cornerRadius} Z`;
+  matrix: number[][],
+): CornerRadius => {
+  const {x, y} = position;
+  const maxY = matrix.length - 1;
+  const maxX = matrix[0].length - 1;
+
+  const topOff = y === 0 || matrix[y - 1][x] === 0;
+  const rightOff = x === maxX || matrix[y][x + 1] === 0;
+  const bottomOff = y === maxY || matrix[y + 1][x] === 0;
+  const leftOff = x === 0 || matrix[y][x - 1] === 0;
+
+  return {
+    topLeft: topOff && leftOff,
+    topRight: topOff && rightOff,
+    bottomLeft: bottomOff && leftOff,
+    bottomRight: bottomOff && rightOff,
+  };
+};
 
 const generateDetectionMarkerPath = (
   position: Position,
@@ -119,15 +177,26 @@ const generateDetectionMarkerPath = (
     innerSize * innerCornerRadiusPercentage * MAX_CORNER_RADIUS;
 
   return (
-    generateSquarePath(position, outerSize, outerRadius, 0, cellSize) +
-    generateSquarePath(position, fillerSize, fillerRadius, padding, cellSize) +
-    generateSquarePath(
+    generateSquarePath({
       position,
-      innerSize,
-      innerRadius,
-      centerPadding,
-      cellSize,
-    )
+      size: outerSize,
+      cornerRadius: outerRadius,
+      unitSize: cellSize,
+    }) +
+    generateSquarePath({
+      position,
+      size: fillerSize,
+      cornerRadius: fillerRadius,
+      padding,
+      unitSize: cellSize,
+    }) +
+    generateSquarePath({
+      position,
+      size: innerSize,
+      cornerRadius: innerRadius,
+      padding: centerPadding,
+      unitSize: cellSize,
+    })
   );
 };
 
@@ -162,7 +231,12 @@ const generatePathFromMatrix = (
         }
       } else {
         if (row[x]) {
-          acc += generateSquarePath({x, y}, cellSize, patternCornerRadius);
+          acc += generateSquarePath({
+            position: {x, y},
+            size: cellSize,
+            cornerRadius: patternCornerRadius,
+            cornersWithRadius: patternOptions?.connected ? cornersToRadius({x, y}, matrix) : undefined,
+          });
         }
       }
     }
