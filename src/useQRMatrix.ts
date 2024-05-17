@@ -36,6 +36,11 @@ interface PathResult {
   path: string;
 }
 
+interface Position {
+  x: number;
+  y: number;
+}
+
 const createQRMatrix = (
   value: string,
   errorCorrectionLevel: ErrorCorrectionLevel,
@@ -65,25 +70,23 @@ const isDetectionMarkerStartingPoint = (
   (row === size - 7 && column === 0);
 
 const generateSquarePath = (
-  x: number,
-  y: number,
+  position: Position,
   size: number,
   cornerRadius: number,
   padding: number = 0,
+  unitSize: number = size,
 ): string =>
-  `M ${x + padding + cornerRadius},${y + padding} ` +
+  `M ${(position.x * unitSize) + padding + cornerRadius},${(position.y * unitSize) + padding} ` +
   `h ${size - 2 * cornerRadius} a${cornerRadius},${cornerRadius} 0 0 1 ${cornerRadius},${cornerRadius} ` +
   `v ${size - 2 * cornerRadius} a${cornerRadius},${cornerRadius} 0 0 1 -${cornerRadius},${cornerRadius} ` +
   `h -${size - 2 * cornerRadius} a${cornerRadius},${cornerRadius} 0 0 1 -${cornerRadius},-${cornerRadius} ` +
   `v -${size - 2 * cornerRadius} a${cornerRadius},${cornerRadius} 0 0 1 ${cornerRadius},-${cornerRadius} Z`;
 
 const generateDetectionMarkerPath = (
-  position: [number, number],
+  position: Position,
   cellSize: number,
   options?: DetectionMarkerOptions,
 ): string => {
-  const [px, py] = [position[0] * cellSize, position[1] * cellSize];
-
   const outerSize = cellSize * 7;
   const padding = cellSize;
   const fillerSize = cellSize * 5;
@@ -116,9 +119,15 @@ const generateDetectionMarkerPath = (
     innerSize * innerCornerRadiusPercentage * MAX_CORNER_RADIUS;
 
   return (
-    generateSquarePath(px, py, outerSize, outerRadius) +
-    generateSquarePath(px, py, fillerSize, fillerRadius, padding) +
-    generateSquarePath(px, py, innerSize, innerRadius, centerPadding)
+    generateSquarePath(position, outerSize, outerRadius, 0, cellSize) +
+    generateSquarePath(position, fillerSize, fillerRadius, padding, cellSize) +
+    generateSquarePath(
+      position,
+      innerSize,
+      innerRadius,
+      centerPadding,
+      cellSize,
+    )
   );
 };
 
@@ -145,7 +154,7 @@ const generatePathFromMatrix = (
       ) {
         if (isDetectionMarkerStartingPoint(x, y, matrix.length)) {
           acc += generateDetectionMarkerPath(
-            [x, y],
+            {x, y},
             cellSize,
             detectionMarkerOptions,
           );
@@ -153,12 +162,7 @@ const generatePathFromMatrix = (
         }
       } else {
         if (row[x]) {
-          acc += generateSquarePath(
-            x * cellSize,
-            y * cellSize,
-            cellSize,
-            patternCornerRadius,
-          );
+          acc += generateSquarePath({x, y}, cellSize, patternCornerRadius);
         }
       }
     }
