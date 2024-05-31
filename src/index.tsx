@@ -1,1 +1,1 @@
-export {QRCode} from "./QRCode";
+export {QRCode} from './QRCode';

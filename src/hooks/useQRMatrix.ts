@@ -1,12 +1,6 @@
 import {useMemo} from 'react';
 import QRCode from 'qrcode';
-
-export enum ErrorCorrectionLevel {
-  L = 'L',
-  M = 'M',
-  Q = 'Q',
-  H = 'H',
-}
+import type {ErrorCorrectionLevel} from '../types';
 
 const DEFAULT_CORNER_RADIUS = 0.0;
 const MAX_CORNER_RADIUS = 0.5;
@@ -100,20 +94,29 @@ const generateSquarePath = ({
 }: GenerateSquarePathProps): string => {
   const getRadius = (corner: keyof typeof cornersWithRadius) =>
     cornersWithRadius[corner] ? cornerRadius : 0;
-  const topRightCorner = `a${cornerRadius},${cornerRadius} 0 0 1 ${cornerRadius},${cornerRadius} `;
-  const bottomRightCorner = `a${cornerRadius},${cornerRadius} 0 0 1 -${cornerRadius},${cornerRadius} `;
-  const bottomLeftCorner = `a${cornerRadius},${cornerRadius} 0 0 1 -${cornerRadius},-${cornerRadius} `;
-  const topLeftCorner = `a${cornerRadius},${cornerRadius} 0 0 1 ${cornerRadius},-${cornerRadius} `;
+  const cornerRadiusString = cornerRadius.toString();
+  const svgCornerRadiusArc = `a${cornerRadiusString},${cornerRadiusString} 0 0 1`;
+  const topRightCorner = `${svgCornerRadiusArc} ${cornerRadiusString},${cornerRadiusString} `;
+  const bottomRightCorner = `${svgCornerRadiusArc} -${cornerRadiusString},${cornerRadiusString} `;
+  const bottomLeftCorner = `${svgCornerRadiusArc} -${cornerRadiusString},-${cornerRadiusString} `;
+  const topLeftCorner = `${svgCornerRadiusArc} ${cornerRadiusString},-${cornerRadiusString} `;
 
+  const startingXPoint = position.x * unitSize + padding + getRadius('topLeft');
+  const startingYPoint = position.y * unitSize + padding;
+  const topLine = size - getRadius('topLeft') - getRadius('topRight');
+
+  const rightLine = size - getRadius('topRight') - getRadius('bottomRight');
+  const bottomLine = size - getRadius('bottomRight') - getRadius('bottomLeft');
+  const leftLine = size - getRadius('bottomLeft') - getRadius('topLeft');
   return (
-    `M ${position.x * unitSize + padding + getRadius('topLeft')},${position.y * unitSize + padding} ` +
-    `h ${size - getRadius('topLeft') - getRadius('topRight')} ` +
+    `M ${startingXPoint.toString()},${startingYPoint.toString()} ` +
+    `h ${topLine.toString()} ` +
     (cornersWithRadius.topRight ? topRightCorner : '') +
-    `v ${size - getRadius('topRight') - getRadius('bottomRight')} ` +
+    `v ${rightLine.toString()} ` +
     (cornersWithRadius.bottomRight ? bottomRightCorner : '') +
-    `h -${size - getRadius('bottomRight') - getRadius('bottomLeft')} ` +
+    `h -${bottomLine.toString()} ` +
     (cornersWithRadius.bottomLeft ? bottomLeftCorner : '') +
-    `v -${size - getRadius('bottomLeft') - getRadius('topLeft')} ` +
+    `v -${leftLine.toString()} ` +
     (cornersWithRadius.topLeft ? topLeftCorner : '') +
     `Z`
   );
@@ -235,7 +238,10 @@ const generatePathFromMatrix = (
             position: {x, y},
             size: cellSize,
             cornerRadius: patternCornerRadius,
-            cornersWithRadius: patternOptions?.connected ? cornersToRadius({x, y}, matrix) : undefined,
+            cornersWithRadius:
+              patternOptions?.connected ?? false
+                ? cornersToRadius({x, y}, matrix)
+                : undefined,
           });
         }
       }
@@ -263,7 +269,11 @@ export const useQRCodeGenerator = (
         options.patternOptions,
       );
     } catch (error) {
-      onError(error);
+      if (error instanceof Error) {
+        onError(error);
+      } else {
+        onError(new Error(String(error)));
+      }
       return null;
     }
   }, [options.value, options.size, options.errorCorrectionLevel]);
