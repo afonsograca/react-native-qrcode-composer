@@ -1,67 +1,83 @@
 import React, {useMemo} from 'react';
+import type {SvgProps} from 'react-native-svg';
 import {G, Defs, ClipPath, Rect, Image} from 'react-native-svg';
-import type {LogoProp} from '../types';
+import type {LogoProp, LogoStyle} from '../types';
+import type {ImageSourcePropType} from 'react-native';
+
+const isImageSourcePropType = (logo: LogoProp): logo is ImageSourcePropType =>
+  typeof logo === 'number' || (typeof logo === 'object' && 'uri' in logo);
+
+const isReactComponent = (
+  logo: LogoProp,
+): logo is React.FunctionComponent<SvgProps> => typeof logo === 'function';
 
 export const useLogo = (
-  size: number,
-  logoSize: number,
-  logoBackgroundColor: string,
-  logoMargin: number,
-  logoBorderRadius: number,
+  qrCodeSize: number,
   logo?: LogoProp,
+  logoStyle?: LogoStyle,
 ) => {
   const logoComponent = useMemo(() => {
-    const marginOffset = logoMargin * 2;
-    const logoPosition = (size - logoSize - marginOffset) / 2;
-    const logoBackgroundSize = logoSize + marginOffset;
-    const logoBackgroundBorderRadius =
-      logoBorderRadius + (logoMargin / logoSize) * logoBorderRadius;
+    if (logo === undefined) {
+      return null;
+    }
+    const {
+      size = qrCodeSize * 0.2,
+      backgroundColor = 'transparent',
+      margin = 2,
+      borderRadius = 0,
+    } = logoStyle ?? {};
 
-    const LogoElement = typeof logo === 'function' ? logo : undefined;
-    const logoURI = typeof logo === 'object' ? logo.uri : undefined;
+    const marginOffset = margin * 2;
+    const position = (qrCodeSize - size - marginOffset) / 2;
+    const backgroundSize = size + marginOffset;
+    const backgroundBorderRadius = borderRadius * (backgroundSize / 2);
+
+    const LogoElement = isReactComponent(logo) ? logo : undefined;
+    const logoImage = isImageSourcePropType(logo) ? logo : undefined;
 
     return (
-      <G x={logoPosition} y={logoPosition}>
+      <G x={position} y={position}>
         <Defs>
           <ClipPath id="clip-logo-background">
             <Rect
-              width={logoBackgroundSize}
-              height={logoBackgroundSize}
-              rx={logoBackgroundBorderRadius}
-              ry={logoBackgroundBorderRadius}
+              width={backgroundSize}
+              height={backgroundSize}
+              rx={backgroundBorderRadius}
+              ry={backgroundBorderRadius}
             />
           </ClipPath>
           <ClipPath id="clip-logo">
             <Rect
-              width={logoSize}
-              height={logoSize}
-              rx={logoBorderRadius}
-              ry={logoBorderRadius}
+              width={size}
+              height={size}
+              rx={borderRadius}
+              ry={borderRadius}
             />
           </ClipPath>
         </Defs>
         <G>
           <Rect
-            width={logoBackgroundSize}
-            height={logoBackgroundSize}
-            fill={logoBackgroundColor}
+            width={backgroundSize}
+            height={backgroundSize}
+            fill={backgroundColor}
             clipPath="url(#clip-logo-background)"
           />
         </G>
-        <G x={logoMargin} y={logoMargin}>
-          {LogoElement ? (
-            <LogoElement width={logoSize} height={logoSize} />
-          ) : (
+        <G x={margin} y={margin}>
+          {LogoElement !== undefined ? (
+            <LogoElement width={size} height={size} />
+          ) : null}
+          {logoImage !== undefined ? (
             <Image
-              width={logoSize}
-              height={logoSize}
-              href={logoURI}
+              width={size}
+              height={size}
+              href={logoImage}
               clipPath="url(#clip-logo)"
             />
-          )}
+          ) : null}
         </G>
       </G>
     );
-  }, [logo, logoSize, logoBackgroundColor, logoMargin, logoBorderRadius, size]);
+  }, [logo, logoStyle, qrCodeSize]);
   return {logoComponent};
 };

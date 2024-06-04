@@ -1,28 +1,18 @@
 import {useMemo} from 'react';
 import QRCode from 'qrcode';
-import type {ErrorCorrectionLevel} from '../types';
+import type {
+  DetectionMarkerOptions,
+  PatternOptions,
+  QRCodeStyle,
+} from '../types';
+import {ErrorCorrectionLevel} from '../types';
 
 const DEFAULT_CORNER_RADIUS = 0.0;
 const MAX_CORNER_RADIUS = 0.5;
 
-interface PatternOptions {
-  connected?: boolean;
-  cornerRadius?: number;
-}
-
-interface DetectionMarkerOptions {
-  connected?: boolean;
-  cornerRadius?: number;
-  outerCornerRadius?: number;
-  innerCornerRadius?: number;
-}
-
-interface QRCodeOptions {
+interface QRCodeOptions extends QRCodeStyle {
   value: string;
   size: number;
-  errorCorrectionLevel: ErrorCorrectionLevel;
-  detectionMarkerOptions?: DetectionMarkerOptions;
-  patternOptions?: PatternOptions;
 }
 
 interface CornerRadius {
@@ -253,20 +243,23 @@ const generatePathFromMatrix = (
 };
 
 export const useQRCodeGenerator = (
-  options: QRCodeOptions,
+  {
+    value,
+    size,
+    errorCorrectionLevel = ErrorCorrectionLevel.M,
+    detectionMarkerOptions,
+    patternOptions,
+  }: QRCodeOptions,
   onError: (error: Error) => void,
 ): PathResult | null => {
   return useMemo(() => {
     try {
-      const matrix = createQRMatrix(
-        options.value,
-        options.errorCorrectionLevel,
-      );
+      const matrix = createQRMatrix(value, errorCorrectionLevel);
       return generatePathFromMatrix(
         matrix,
-        options.size,
-        options.detectionMarkerOptions,
-        options.patternOptions,
+        size,
+        detectionMarkerOptions,
+        patternOptions,
       );
     } catch (error) {
       if (error instanceof Error) {
@@ -276,5 +269,12 @@ export const useQRCodeGenerator = (
       }
       return null;
     }
-  }, [options.value, options.size, options.errorCorrectionLevel]);
+  }, [
+    value,
+    size,
+    errorCorrectionLevel,
+    detectionMarkerOptions,
+    patternOptions,
+    onError,
+  ]);
 };

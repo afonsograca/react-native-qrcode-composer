@@ -10,42 +10,30 @@ import Svg, {
 } from 'react-native-svg';
 import {useQRCodeGenerator} from './hooks/useQRMatrix';
 import {useLogo} from './hooks/useLogo';
-import {ErrorCorrectionLevel, type QRCodeProps} from './types';
+import {type QRCodeProps} from './types';
 
 export const QRCode = ({
   value = 'QR code message',
   size = 100,
-  color = 'black',
-  backgroundColor = 'white',
   logo,
-  logoSize = size * 0.2,
-  logoBackgroundColor = 'transparent',
-  logoMargin = 2,
-  logoBorderRadius = 0,
-  quietZone = 0,
-  enableLinearGradient = false,
-  gradientDirection = ['0%', '0%', '100%', '100%'],
-  linearGradient = ['white', 'black'],
-  errorCorrectionLevel = ErrorCorrectionLevel.M,
+  logoStyle,
+  style,
   getRef,
   onError,
 }: QRCodeProps) => {
   const [error, setError] = useState<string | null>(null);
-  const qrCodePath = useQRCodeGenerator(
-    {value, size, errorCorrectionLevel: errorCorrectionLevel},
-    error => {
-      setError(error.message);
-      onError?.(error);
-    },
-  );
-  const {logoComponent} = useLogo(
-    size,
-    logoSize,
-    logoBackgroundColor,
-    logoMargin,
-    logoBorderRadius,
-    logo,
-  );
+  const qrCodePath = useQRCodeGenerator({value, size, ...style}, error => {
+    setError(error.message);
+    onError?.(error);
+  });
+  const {
+    color = 'black',
+    backgroundColor = 'white',
+    quietZone = 0,
+    linearGradient,
+    gradientDirection = ['0%', '0%', '100%', '100%'],
+  } = style ?? {};
+  const {logoComponent} = useLogo(size, logo, logoStyle);
 
   if (qrCodePath) {
     const {path} = qrCodePath;
@@ -61,18 +49,20 @@ export const QRCode = ({
         width={size}
         height={size}
       >
-        <Defs>
-          <LinearGradient
-            id="grad"
-            x1={gradientDirection[0]}
-            y1={gradientDirection[1]}
-            x2={gradientDirection[2]}
-            y2={gradientDirection[3]}
-          >
-            <Stop offset="0" stopColor={linearGradient[0]} stopOpacity="1" />
-            <Stop offset="1" stopColor={linearGradient[1]} stopOpacity="1" />
-          </LinearGradient>
-        </Defs>
+        {linearGradient !== undefined ? (
+          <Defs>
+            <LinearGradient
+              id="grad"
+              x1={gradientDirection[0]}
+              y1={gradientDirection[1]}
+              x2={gradientDirection[2]}
+              y2={gradientDirection[3]}
+            >
+              <Stop offset="0" stopColor={linearGradient[0]} stopOpacity="1" />
+              <Stop offset="1" stopColor={linearGradient[1]} stopOpacity="1" />
+            </LinearGradient>
+          </Defs>
+        ) : null}
         <G>
           <Rect
             x={-quietZone}
@@ -85,11 +75,11 @@ export const QRCode = ({
         <G>
           <Path
             d={path}
-            fill={enableLinearGradient ? 'url(#grad)' : color}
+            fill={linearGradient !== undefined ? 'url(#grad)' : color}
             fillRule="evenodd"
           />
         </G>
-        {logo && logoComponent}
+        {logoComponent !== null && logoComponent}
       </Svg>
     );
   } else if (error != null && !onError) {

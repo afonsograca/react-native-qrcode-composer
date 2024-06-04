@@ -1,4 +1,4 @@
-module.exports = {
+export default {
   preset: 'react-native',
   transform: {
     '^.+\\.(js|ts|tsx)$': 'babel-jest',
