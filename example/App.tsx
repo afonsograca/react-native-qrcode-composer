@@ -1,3 +1,5 @@
+/* eslint-disable @typescript-eslint/no-unsafe-member-access */
+/* eslint-disable @typescript-eslint/no-unsafe-assignment */
 import React from 'react';
 import type {PropsWithChildren} from 'react';
 import {
@@ -11,7 +13,7 @@ import {
 } from 'react-native';
 import {Colors} from 'react-native/Libraries/NewAppScreen';
 import {QRCode} from 'react-native-qrcode-composer';
-
+import Logo from 'assets/placeholder.svg';
 
 type SectionProps = PropsWithChildren<{
   title: string;
@@ -60,9 +62,12 @@ function App(): React.JSX.Element {
         contentInsetAdjustmentBehavior="automatic"
         style={backgroundStyle}>
         <View
-          style={{
-            backgroundColor: isDarkMode ? Colors.black : Colors.white,
-          }}>
+          style={[
+            {
+              backgroundColor: isDarkMode ? Colors.black : Colors.white,
+            },
+            styles.scrollView,
+          ]}>
           <Section title="Simple">
             <QRCode />
           </Section>
@@ -70,7 +75,57 @@ function App(): React.JSX.Element {
             <QRCode size={200} />
           </Section>
           <Section title="With color">
-            <QRCode color="grey" backgroundColor="yellow" />
+            <QRCode style={{color: 'grey', backgroundColor: 'yellow'}} />
+          </Section>
+          <Section title="Round Detection Markers">
+            <QRCode
+              style={{
+                detectionMarkerOptions: {
+                  cornerRadius: 1,
+                },
+              }}
+            />
+          </Section>
+          <Section title="Mixed round detection markers">
+            <QRCode
+              style={{
+                detectionMarkerOptions: {
+                  outerCornerRadius: 0.5,
+                  innerCornerRadius: 1,
+                },
+              }}
+            />
+          </Section>
+          <Section title="Rounded pattern styling">
+            <QRCode
+              style={{
+                patternOptions: {
+                  cornerRadius: 1,
+                },
+              }}
+            />
+          </Section>
+          <Section title="Connected rounded pattern styling">
+            <QRCode
+              style={{
+                patternOptions: {
+                  connected: true,
+                  cornerRadius: 1,
+                },
+              }}
+            />
+          </Section>
+          <Section title="Image Logo">
+            <QRCode logo={require('./assets/placeholder.png')} />
+          </Section>
+          <Section title="SVG Logo">
+            <QRCode logo={Logo} />
+          </Section>
+          <Section title="Logo with styling">
+            <QRCode
+              logo={Logo}
+              logoStyle={{backgroundColor: 'red', margin: 8, borderRadius: 1}}
+            />
           </Section>
         </View>
       </ScrollView>
@@ -91,6 +146,9 @@ const styles = StyleSheet.create({
     marginTop: 8,
     fontSize: 18,
     fontWeight: '400',
+  },
+  scrollView: {
+    paddingBottom: 24,
   },
 });
 

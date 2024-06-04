@@ -5,9 +5,9 @@ module.exports = {
       'module-resolver',
       {
         root: ['./'],
-        // extensions: ['.ios.js', '.android.js', '.js', '.json'],
         alias: {
-          'react-native-qrcode-composer': '../src',
+          'react-native-qrcode-composer': './../src',
+          assets: './assets',
         },
       },
     ],
