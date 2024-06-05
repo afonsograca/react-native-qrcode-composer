@@ -1,7 +1,6 @@
-/* eslint-disable @typescript-eslint/no-unsafe-member-access */
-/* eslint-disable @typescript-eslint/no-unsafe-assignment */
 import React from 'react';
 import type {PropsWithChildren} from 'react';
+import type {ColorValue, ImageSourcePropType} from 'react-native';
 import {
   SafeAreaView,
   ScrollView,
@@ -11,9 +10,10 @@ import {
   useColorScheme,
   View,
 } from 'react-native';
-import {Colors} from 'react-native/Libraries/NewAppScreen';
+import {Colors as ReactColors} from 'react-native/Libraries/NewAppScreen';
 import {QRCode} from 'react-native-qrcode-composer';
 import Logo from 'assets/placeholder.svg';
+import placeholder from 'assets/placeholder.png';
 
 type SectionProps = PropsWithChildren<{
   title: string;
@@ -21,15 +21,19 @@ type SectionProps = PropsWithChildren<{
 
 function Section({children, title}: SectionProps): React.JSX.Element {
   const isDarkMode = useColorScheme() === 'dark';
+  const Colors = ReactColors as Record<string, ColorValue>;
   return (
     <View style={styles.sectionContainer}>
       <Text
         style={[
           styles.sectionTitle,
           {
-            color: isDarkMode ? Colors.white : Colors.black,
+            color: (isDarkMode ? Colors.white : Colors.black) as
+              | ColorValue
+              | undefined,
           },
-        ]}>
+        ]}
+      >
         {title}
       </Text>
       <Text
@@ -38,7 +42,8 @@ function Section({children, title}: SectionProps): React.JSX.Element {
           {
             color: isDarkMode ? Colors.light : Colors.dark,
           },
-        ]}>
+        ]}
+      >
         {children}
       </Text>
     </View>
@@ -47,6 +52,7 @@ function Section({children, title}: SectionProps): React.JSX.Element {
 
 function App(): React.JSX.Element {
   const isDarkMode = useColorScheme() === 'dark';
+  const Colors = ReactColors as Record<string, ColorValue>;
 
   const backgroundStyle = {
     backgroundColor: isDarkMode ? Colors.darker : Colors.lighter,
@@ -60,14 +66,16 @@ function App(): React.JSX.Element {
       />
       <ScrollView
         contentInsetAdjustmentBehavior="automatic"
-        style={backgroundStyle}>
+        style={backgroundStyle}
+      >
         <View
           style={[
             {
               backgroundColor: isDarkMode ? Colors.black : Colors.white,
             },
             styles.scrollView,
-          ]}>
+          ]}
+        >
           <Section title="Simple">
             <QRCode />
           </Section>
@@ -116,7 +124,7 @@ function App(): React.JSX.Element {
             />
           </Section>
           <Section title="Image Logo">
-            <QRCode logo={require('./assets/placeholder.png')} />
+            <QRCode logo={placeholder as ImageSourcePropType} />
           </Section>
           <Section title="SVG Logo">
             <QRCode logo={Logo} />

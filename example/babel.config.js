@@ -1,15 +1,25 @@
-module.exports = {
-  presets: ['module:@react-native/babel-preset'],
-  plugins: [
-    [
-      'module-resolver',
-      {
-        root: ['./'],
-        alias: {
-          'react-native-qrcode-composer': './../src',
-          assets: './assets',
+const path = require('path');
+
+const pak = require('../package.json');
+
+module.exports = function (api) {
+  api.cache(true);
+
+  return {
+    presets: ['module:@react-native/babel-preset'],
+    plugins: [
+      [
+        'module-resolver',
+        {
+          extensions: ['.tsx', '.ts', '.js', '.json'],
+          root: ['./'],
+          alias: {
+            // For development, we want to alias the library to the source
+            [pak.name]: path.join(__dirname, '..', pak.source),
+            '': './',
+          },
         },
-      },
+      ],
     ],
-  ],
+  };
 };

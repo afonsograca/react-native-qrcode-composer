@@ -11,7 +11,7 @@ const modules = Object.keys({
 
 const {
   resolver: {sourceExts, assetExts},
-} = getDefaultConfig(__dirname);
+} = defaultConfig;
 
 const config = {
   transformer: {
