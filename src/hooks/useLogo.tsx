@@ -1,7 +1,7 @@
 import React, {useMemo} from 'react';
 import type {SvgProps} from 'react-native-svg';
 import {G, Defs, ClipPath, Rect, Image} from 'react-native-svg';
-import type {LogoProp, LogoStyle} from '../types';
+import type {LogoProp, LogoStyle} from 'types';
 import type {ImageSourcePropType} from 'react-native';
 
 const isImageSourcePropType = (logo: LogoProp): logo is ImageSourcePropType =>

@@ -13,7 +13,14 @@ import globals from 'globals';
 export default tseslint.config(
   // global ignores
   {
-    ignores: ['node_modules/**', 'lib/**', 'example/node_modules/**', '**/*.config.js', '**/*rc.js'],
+    ignores: [
+      'node_modules/**',
+      'lib/**',
+      'example/node_modules/**',
+      '**/*.config.js',
+      '**/*.cjs',
+      '**/*rc.js',
+    ],
   },
   eslint.configs.recommended,
   ...tseslint.configs.strictTypeChecked,

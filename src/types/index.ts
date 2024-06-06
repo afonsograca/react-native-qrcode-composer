@@ -29,9 +29,8 @@ export interface QRCodeStyle {
   backgroundColor?: string;
   quietZone?: number;
   errorCorrectionLevel?: ErrorCorrectionLevel;
-  enableLinearGradient?: boolean;
-  gradientDirection?: [NumberProp, NumberProp, NumberProp, NumberProp];
   linearGradient?: [ColorValue, ColorValue];
+  gradientDirection?: [NumberProp, NumberProp, NumberProp, NumberProp];
   detectionMarkerOptions?: DetectionMarkerOptions;
   patternOptions?: PatternOptions;
 }

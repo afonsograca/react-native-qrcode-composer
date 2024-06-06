@@ -15,11 +15,8 @@
   "source": "src/index.tsx",
   "type": "module",
   "files": [
-    "src",
     "lib",
-    "!**/__tests__",
-    "!**/__fixtures__",
-    "!**/__mocks__"
+    "src"
   ],
   "keywords": [
     "react-native",
@@ -52,9 +49,12 @@
   },
   "devDependencies": {
     "@babel/core": "^7.24.5",
+    "@babel/preset-env": "^7.24.6",
+    "@babel/preset-typescript": "^7.24.6",
     "@eslint/js": "^9.3.0",
     "@react-native/eslint-config": "^0.74.83",
     "@testing-library/jest-native": "^5.4.3",
+    "@testing-library/react-hooks": "^8.0.1",
     "@testing-library/react-native": "^12.5.0",
     "@types/eslint__js": "^8.42.3",
     "@types/jest": "^29.5.12",
@@ -76,7 +76,7 @@
     "react-native": ">=0.64.0",
     "react-native-builder-bob": "^0.23.2",
     "react-native-svg": ">=13.2.0",
-    "ts-jest": "^29.1.2",
+    "ts-jest": "^29.1.4",
     "typescript": "^5.4.5",
     "typescript-eslint": "^7.11.0"
   },
@@ -86,7 +86,15 @@
     "targets": [
       "commonjs",
       "module",
-      "typescript"
+      [
+        "typescript",
+        {
+          "project": "tsconfig.build.json"
+        }
+      ]
+    ],
+    "exclude": [
+      "**/{__tests__,__fixtures__,__mocks__}/**"
     ]
   }
 }

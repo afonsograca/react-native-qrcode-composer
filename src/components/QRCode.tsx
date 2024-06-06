@@ -8,9 +8,9 @@ import Svg, {
   Stop,
   Text,
 } from 'react-native-svg';
-import {useQRCodeGenerator} from './hooks/useQRMatrix';
-import {useLogo} from './hooks/useLogo';
-import {type QRCodeProps} from './types';
+import {useQRMatrix} from '../hooks/useQRMatrix';
+import {useLogo} from '../hooks/useLogo';
+import {type QRCodeProps} from '../types';
 
 export const QRCode = ({
   value = 'QR code message',
@@ -22,7 +22,7 @@ export const QRCode = ({
   onError,
 }: QRCodeProps) => {
   const [error, setError] = useState<string | null>(null);
-  const qrCodePath = useQRCodeGenerator({value, size, ...style}, error => {
+  const qrCodePath = useQRMatrix({value, size, ...style}, error => {
     setError(error.message);
     onError?.(error);
   });

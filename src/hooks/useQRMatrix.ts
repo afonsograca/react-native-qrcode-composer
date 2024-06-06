@@ -1,5 +1,6 @@
 import {useMemo} from 'react';
 import QRCode from 'qrcode';
+
 import type {
   DetectionMarkerOptions,
   PatternOptions,
@@ -242,7 +243,7 @@ const generatePathFromMatrix = (
   return {cellSize, path};
 };
 
-export const useQRCodeGenerator = (
+export const useQRMatrix = (
   {
     value,
     size,
