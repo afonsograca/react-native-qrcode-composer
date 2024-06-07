@@ -21,7 +21,6 @@ interface CornerRadius {
 }
 
 export interface PathResult {
-  cellSize: number;
   path: string;
 }
 
@@ -237,7 +236,7 @@ const generatePathFromMatrix = (
     return acc;
   }, '');
 
-  return {cellSize, path};
+  return {path};
 };
 
 export const useQRMatrix = ({
