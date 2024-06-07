@@ -42,7 +42,11 @@ export interface LogoStyle {
   borderRadius?: number;
 }
 
-export interface QRCodeProps {
+export interface TestProps<T extends string = string> {
+  testID?: T;
+}
+
+export interface QRCodeProps extends TestProps {
   value?: string;
   size?: number;
   logo?: LogoProp;

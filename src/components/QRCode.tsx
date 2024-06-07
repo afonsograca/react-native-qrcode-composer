@@ -8,9 +8,11 @@ import Svg, {
   Stop,
   Text,
 } from 'react-native-svg';
-import {useQRMatrix} from '../hooks/useQRMatrix';
-import {useLogo} from '../hooks/useLogo';
-import {type QRCodeProps} from '../types';
+import {useQRMatrix} from 'hooks/useQRMatrix';
+import {useLogo} from 'hooks/useLogo';
+import {type QRCodeProps} from 'types';
+
+export const DEFAULT_TEST_ID = 'react-native-qrcode-composer';
 
 export const QRCode = ({
   value = 'QR code message',
@@ -20,12 +22,10 @@ export const QRCode = ({
   style,
   getRef,
   onError,
+  testID = DEFAULT_TEST_ID,
 }: QRCodeProps) => {
   const [error, setError] = useState<string | null>(null);
-  const qrCodePath = useQRMatrix({value, size, ...style}, error => {
-    setError(error.message);
-    onError?.(error);
-  });
+  const matrixResult = useQRMatrix({value, size, ...style});
   const {
     color = 'black',
     backgroundColor = 'white',
@@ -33,10 +33,10 @@ export const QRCode = ({
     linearGradient,
     gradientDirection = ['0%', '0%', '100%', '100%'],
   } = style ?? {};
-  const {logoComponent} = useLogo(size, logo, logoStyle);
+  const {logoComponent} = useLogo(size, `${testID}.logo`, logo, logoStyle);
 
-  if (qrCodePath) {
-    const {path} = qrCodePath;
+  if (matrixResult.status === 'success') {
+    const {path} = matrixResult.value;
     return (
       <Svg
         ref={getRef}
@@ -48,6 +48,7 @@ export const QRCode = ({
         ].join(' ')}
         width={size}
         height={size}
+        testID={`${testID}.qrcode`}
       >
         {linearGradient !== undefined ? (
           <Defs>
@@ -77,14 +78,18 @@ export const QRCode = ({
             d={path}
             fill={linearGradient !== undefined ? 'url(#grad)' : color}
             fillRule="evenodd"
+            testID={`${testID}.path`}
           />
         </G>
         {logoComponent !== null && logoComponent}
       </Svg>
     );
-  } else if (error != null && !onError) {
-    return <Text>{error}</Text>;
   } else {
+    setError(matrixResult.error.message);
+    if (onError === undefined) {
+      return <Text testID={`${testID}.error`}>{error}</Text>;
+    }
+    onError(matrixResult.error);
     return null;
   }
 };

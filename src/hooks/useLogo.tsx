@@ -13,6 +13,7 @@ const isReactComponent = (
 
 export const useLogo = (
   qrCodeSize: number,
+  testId: string,
   logo?: LogoProp,
   logoStyle?: LogoStyle,
 ) => {
@@ -36,7 +37,7 @@ export const useLogo = (
     const logoImage = isImageSourcePropType(logo) ? logo : undefined;
 
     return (
-      <G x={position} y={position}>
+      <G x={position} y={position} testID={testId}>
         <Defs>
           <ClipPath id="clip-logo-background">
             <Rect

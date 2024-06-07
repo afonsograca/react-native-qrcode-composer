@@ -1,12 +1,9 @@
 import {useMemo} from 'react';
 import QRCode from 'qrcode';
 
-import type {
-  DetectionMarkerOptions,
-  PatternOptions,
-  QRCodeStyle,
-} from '../types';
-import {ErrorCorrectionLevel} from '../types';
+import type {DetectionMarkerOptions, PatternOptions, QRCodeStyle} from 'types';
+import {ErrorCorrectionLevel} from 'types';
+import type {Result} from 'types/result';
 
 const DEFAULT_CORNER_RADIUS = 0.0;
 const MAX_CORNER_RADIUS = 0.5;
@@ -23,7 +20,7 @@ interface CornerRadius {
   bottomRight: boolean;
 }
 
-interface PathResult {
+export interface PathResult {
   cellSize: number;
   path: string;
 }
@@ -243,32 +240,31 @@ const generatePathFromMatrix = (
   return {cellSize, path};
 };
 
-export const useQRMatrix = (
-  {
-    value,
-    size,
-    errorCorrectionLevel = ErrorCorrectionLevel.M,
-    detectionMarkerOptions,
-    patternOptions,
-  }: QRCodeOptions,
-  onError: (error: Error) => void,
-): PathResult | null => {
+export const useQRMatrix = ({
+  value,
+  size,
+  errorCorrectionLevel = ErrorCorrectionLevel.M,
+  detectionMarkerOptions,
+  patternOptions,
+}: QRCodeOptions): Result<PathResult> => {
   return useMemo(() => {
     try {
       const matrix = createQRMatrix(value, errorCorrectionLevel);
-      return generatePathFromMatrix(
+      const pathResult = generatePathFromMatrix(
         matrix,
         size,
         detectionMarkerOptions,
         patternOptions,
       );
+      return {status: 'success', value: pathResult};
     } catch (error) {
+      let failure: Error;
       if (error instanceof Error) {
-        onError(error);
+        failure = error;
       } else {
-        onError(new Error(String(error)));
+        failure = new Error(String(error));
       }
-      return null;
+      return {status: 'failure', error: failure};
     }
   }, [
     value,
@@ -276,6 +272,5 @@ export const useQRMatrix = (
     errorCorrectionLevel,
     detectionMarkerOptions,
     patternOptions,
-    onError,
   ]);
 };

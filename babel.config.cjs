@@ -8,11 +8,10 @@ module.exports = {
     [
       'module-resolver',
       {
-        root: ['./src'],
         alias: {
-          hooks: './hooks',
-          components: './components',
-          '': '.',
+          hooks: './src/hooks',
+          components: './src/components',
+          types: './src/types',
         },
       },
     ],
