@@ -12,6 +12,7 @@ module.exports = {
           hooks: './src/hooks',
           components: './src/components',
           types: './src/types',
+          tests: './src/__tests__',
         },
       },
     ],

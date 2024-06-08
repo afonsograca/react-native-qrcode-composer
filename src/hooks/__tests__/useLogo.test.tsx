@@ -3,7 +3,6 @@ import {useLogo} from 'hooks/useLogo';
 import Logo from 'logo.svg';
 import logo from 'logo.png';
 import {G, Image, Rect} from 'react-native-svg';
-import {findChildComponent} from 'tests/findChildComponent';
 
 describe('useLogo', () => {
   it('should return null when logo is undefined', () => {

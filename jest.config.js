@@ -9,11 +9,9 @@ export default {
       },
     ],
   },
-  setupFilesAfterEnv: [
-    '<rootDir>/node_modules/@testing-library/jest-native/extend-expect.js',
-  ],
+  setupFilesAfterEnv: ['<rootDir>/src/__tests__/setupJest.ts'],
   moduleFileExtensions: ['ts', 'tsx', 'js', 'jsx', 'json', 'node'],
-  modulePathIgnorePatterns: ['<rootDir>/lib/'],
+  modulePathIgnorePatterns: ['<rootDir>/lib/', '<rootDir>/src/__tests__/'],
   moduleNameMapper: {
     '\\.svg': '<rootDir>/src/__mocks__/svgMock.ts',
     '\\.png': '<rootDir>/src/__mocks__/pngMock.ts',

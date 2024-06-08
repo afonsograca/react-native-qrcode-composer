@@ -1,6 +1,6 @@
 import React from 'react';
 import type {PropsWithChildren} from 'react';
-import type {ColorValue, ImageSourcePropType} from 'react-native';
+import type {ColorValue} from 'react-native';
 import {
   SafeAreaView,
   ScrollView,
@@ -124,7 +124,7 @@ function App(): React.JSX.Element {
             />
           </Section>
           <Section title="Image Logo">
-            <QRCode logo={placeholder as ImageSourcePropType} />
+            <QRCode logo={placeholder} />
           </Section>
           <Section title="SVG Logo">
             <QRCode logo={Logo} />

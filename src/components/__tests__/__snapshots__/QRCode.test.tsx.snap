@@ -85,6 +85,7 @@ exports[`QRCode Snapshots renders a QR code with a logo 1`] = `
             "fillRule",
           ]
         }
+        testID="react-native-qrcode-composer.path"
       />
     </RNSVGGroup>
     <RNSVGGroup
@@ -114,7 +115,6 @@ exports[`QRCode Snapshots renders a QR code with a logo 1`] = `
               "type": 0,
             }
           }
-          name="clip-logo-background"
         >
           <RNSVGRect
             fill={
@@ -126,6 +126,7 @@ exports[`QRCode Snapshots renders a QR code with a logo 1`] = `
             height={24}
             rx={0}
             ry={0}
+            testID="rect.clip-logo-background"
             width={24}
             x={0}
             y={0}
@@ -138,7 +139,6 @@ exports[`QRCode Snapshots renders a QR code with a logo 1`] = `
               "type": 0,
             }
           }
-          name="clip-logo"
         >
           <RNSVGRect
             fill={
@@ -150,6 +150,7 @@ exports[`QRCode Snapshots renders a QR code with a logo 1`] = `
             height={20}
             rx={0}
             ry={0}
+            testID="rect.clip-logo"
             width={20}
             x={0}
             y={0}
@@ -178,6 +179,7 @@ exports[`QRCode Snapshots renders a QR code with a logo 1`] = `
               "fill",
             ]
           }
+          testID="rect.logo-background"
           width={24}
           x={0}
           y={0}
@@ -200,6 +202,7 @@ exports[`QRCode Snapshots renders a QR code with a logo 1`] = `
             2,
           ]
         }
+        testID="g.logo-container"
       />
     </RNSVGGroup>
   </RNSVGGroup>
@@ -291,6 +294,7 @@ exports[`QRCode Snapshots renders a default QR code 1`] = `
             "fillRule",
           ]
         }
+        testID="react-native-qrcode-composer.path"
       />
     </RNSVGGroup>
   </RNSVGGroup>

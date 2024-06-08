@@ -4,7 +4,17 @@ interface ContainerProps {
   children: React.ReactNode;
 }
 
-export function findChildComponent<T extends string = string>(
+declare global {
+  function findChildComponent<T extends string = string>(
+    container: React.ReactElement<ContainerProps> | null,
+    childType: React.ElementType,
+    testID?: T,
+  ): React.ReactElement | null;
+}
+
+global.findChildComponent = function findChildComponent<
+  T extends string = string,
+>(
   container: React.ReactElement<ContainerProps> | null,
   childType: React.ElementType,
   testID?: T,
@@ -43,4 +53,4 @@ export function findChildComponent<T extends string = string>(
   }
 
   return null;
-}
+};
