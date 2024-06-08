@@ -39,16 +39,18 @@ export const useLogo = (
     return (
       <G x={position} y={position} testID={testId}>
         <Defs>
-          <ClipPath id="clip-logo-background">
+          <ClipPath>
             <Rect
+              testID="rect.clip-logo-background"
               width={backgroundSize}
               height={backgroundSize}
               rx={backgroundBorderRadius}
               ry={backgroundBorderRadius}
             />
           </ClipPath>
-          <ClipPath id="clip-logo">
+          <ClipPath>
             <Rect
+              testID="rect.clip-logo"
               width={size}
               height={size}
               rx={borderRadius}
@@ -58,13 +60,14 @@ export const useLogo = (
         </Defs>
         <G>
           <Rect
+            testID="rect.logo-background"
             width={backgroundSize}
             height={backgroundSize}
             fill={backgroundColor}
             clipPath="url(#clip-logo-background)"
           />
         </G>
-        <G x={margin} y={margin}>
+        <G x={margin} y={margin} testID="g.logo-container">
           {LogoElement !== undefined ? (
             <LogoElement width={size} height={size} />
           ) : null}
