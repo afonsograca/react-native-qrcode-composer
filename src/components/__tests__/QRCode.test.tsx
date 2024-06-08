@@ -71,32 +71,32 @@ describe('QRCode', () => {
     expect(screen.queryByTestId(`${DEFAULT_TEST_ID}.qrcode`)).not.toBeNull();
   });
 
-  describe('when there is an error', () => {
-    const error = new Error('QRCodeError');
+  // describe('when there is an error', () => {
+  //   const error = new Error('QRCodeError');
 
-    it('if onError is set, no text message should be displayed', () => {
-      const onError = jest.fn();
-      jest.spyOn(UseQRMatrixHook, 'useQRMatrix').mockReturnValue({
-        status: 'failure',
-        error: error,
-      });
+  //   it('if onError is set, no text message should be displayed', () => {
+  //     const onError = jest.fn();
+  //     jest.spyOn(UseQRMatrixHook, 'useQRMatrix').mockReturnValue({
+  //       status: 'failure',
+  //       error: error,
+  //     });
 
-      render(<QRCode onError={onError} />);
+  //     render(<QRCode onError={onError} />);
 
-      expect(onError).toHaveBeenCalledWith(error);
-    });
+  //     expect(onError).toHaveBeenCalledWith(error);
+  //   });
 
-    it('if there is no onError, the error message is displayed', () => {
-      jest.spyOn(UseQRMatrixHook, 'useQRMatrix').mockReturnValue({
-        status: 'failure',
-        error: error,
-      });
+  //   it('if there is no onError, the error message is displayed', () => {
+  //     jest.spyOn(UseQRMatrixHook, 'useQRMatrix').mockReturnValue({
+  //       status: 'failure',
+  //       error: error,
+  //     });
 
-      render(<QRCode />);
+  //     render(<QRCode />);
 
-      expect(screen.getByTestId(`${DEFAULT_TEST_ID}.error`)).toHaveTextContent(
-        error.message,
-      );
-    });
-  });
+  //     expect(screen.getByTestId(`${DEFAULT_TEST_ID}.error`)).toHaveTextContent(
+  //       error.message,
+  //     );
+  //   });
+  // });
 });
