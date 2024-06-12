@@ -85,6 +85,9 @@ function App(): React.JSX.Element {
           <Section title="With color">
             <QRCode style={{color: 'grey', backgroundColor: 'yellow'}} />
           </Section>
+          <Section title="With gradient">
+            <QRCode style={{color: 'grey', backgroundColor: 'yellow'}} />
+          </Section>
           <Section title="Round Detection Markers">
             <QRCode
               style={{
@@ -134,6 +137,9 @@ function App(): React.JSX.Element {
               logo={Logo}
               logoStyle={{backgroundColor: 'red', margin: 8, borderRadius: 1}}
             />
+          </Section>
+          <Section title="Failing to generate a QR code">
+            <QRCode value="" />
           </Section>
         </View>
       </ScrollView>
