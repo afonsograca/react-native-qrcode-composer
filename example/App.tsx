@@ -12,8 +12,8 @@ import {
 } from 'react-native';
 import {Colors as ReactColors} from 'react-native/Libraries/NewAppScreen';
 import {QRCode} from 'react-native-qrcode-composer';
-import Logo from 'assets/placeholder.svg';
-import placeholder from 'assets/placeholder.png';
+import Logo from './assets/placeholder.svg';
+import placeholder from './assets/placeholder.png';
 
 type SectionProps = PropsWithChildren<{
   title: string;

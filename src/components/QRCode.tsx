@@ -8,9 +8,9 @@ import Svg, {
   Stop,
   Text,
 } from 'react-native-svg';
-import {useQRMatrix} from 'hooks/useQRMatrix';
-import {useLogo} from 'hooks/useLogo';
-import {type QRCodeProps} from 'types';
+import {useQRMatrix} from '../hooks/useQRMatrix';
+import {useLogo} from '../hooks/useLogo';
+import {type QRCodeProps} from '../types';
 
 export const DEFAULT_TEST_ID = 'react-native-qrcode-composer';
 

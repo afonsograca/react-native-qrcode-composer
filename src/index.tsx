@@ -1,1 +1,1 @@
-export {QRCode} from 'components/QRCode';
+export {QRCode} from './components/QRCode';

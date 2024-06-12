@@ -1,5 +1,5 @@
 import {renderHook} from '@testing-library/react-hooks';
-import {useLogo} from 'hooks/useLogo';
+import {useLogo} from '../useLogo';
 import Logo from 'logo.svg';
 import logo from 'logo.png';
 import {G, Image, Rect} from 'react-native-svg';
@@ -47,7 +47,7 @@ describe('useLogo', () => {
       const logoBackground = findChildComponent(
         result.current.logoComponent,
         Rect,
-        'rect.clip-logo',
+        'rect.logo-clip-path',
       );
       expect(logoBackground?.props).toEqual(
         expect.objectContaining({rx: borderRadius, ry: borderRadius}),

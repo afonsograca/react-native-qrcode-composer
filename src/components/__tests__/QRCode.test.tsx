@@ -1,9 +1,9 @@
 import React from 'react';
 import {render, renderHook, screen} from '@testing-library/react-native';
-import {DEFAULT_TEST_ID, QRCode} from 'components/QRCode';
+import {DEFAULT_TEST_ID, QRCode} from '../QRCode';
 import Logo from 'logo.svg';
-import * as UseQRMatrixHook from 'hooks/useQRMatrix';
-import {useQRMatrix} from 'hooks/useQRMatrix';
+import * as UseQRMatrixHook from '../../hooks/useQRMatrix';
+import {useQRMatrix} from '../../hooks/useQRMatrix';
 
 describe('QRCode', () => {
   afterEach(jest.restoreAllMocks);

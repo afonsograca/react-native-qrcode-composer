@@ -63,7 +63,6 @@
     "@types/react": "^18.3.1",
     "@types/react-test-renderer": "^18.3.0",
     "babel-jest": "^29.7.0",
-    "babel-plugin-module-resolver": "^5.0.2",
     "eslint": "^9.3.0",
     "eslint-config-prettier": "^9.1.0",
     "eslint-plugin-import-x": "^0.5.1",

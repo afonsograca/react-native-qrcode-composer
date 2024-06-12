@@ -1,9 +1,13 @@
 import {useMemo} from 'react';
 import QRCode from 'qrcode';
 
-import type {DetectionMarkerOptions, PatternOptions, QRCodeStyle} from 'types';
-import {ErrorCorrectionLevel} from 'types';
-import type {Result} from 'types/result';
+import type {
+  DetectionMarkerOptions,
+  PatternOptions,
+  QRCodeStyle,
+} from '../types';
+import {ErrorCorrectionLevel} from '../types';
+import type {Result} from '../types/result';
 
 const DEFAULT_CORNER_RADIUS = 0.0;
 const MAX_CORNER_RADIUS = 0.5;

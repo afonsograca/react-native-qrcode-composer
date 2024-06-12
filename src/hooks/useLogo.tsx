@@ -1,7 +1,7 @@
 import React, {useMemo} from 'react';
 import type {SvgProps} from 'react-native-svg';
 import {G, Defs, ClipPath, Rect, Image} from 'react-native-svg';
-import type {LogoProp, LogoStyle} from 'types';
+import type {LogoProp, LogoStyle} from '../types';
 import type {ImageSourcePropType} from 'react-native';
 
 const isImageSourcePropType = (logo: LogoProp): logo is ImageSourcePropType =>
@@ -10,6 +10,9 @@ const isImageSourcePropType = (logo: LogoProp): logo is ImageSourcePropType =>
 const isReactComponent = (
   logo: LogoProp,
 ): logo is React.FunctionComponent<SvgProps> => typeof logo === 'function';
+
+const logoBackgroundClipPath = 'logo-background-clip-path';
+const logoClipPath = 'logo-clip-path';
 
 export const useLogo = (
   qrCodeSize: number,
@@ -39,18 +42,18 @@ export const useLogo = (
     return (
       <G x={position} y={position} testID={testId}>
         <Defs>
-          <ClipPath>
+          <ClipPath id={logoBackgroundClipPath}>
             <Rect
-              testID="rect.clip-logo-background"
+              testID={`rect.${logoBackgroundClipPath}`}
               width={backgroundSize}
               height={backgroundSize}
               rx={backgroundBorderRadius}
               ry={backgroundBorderRadius}
             />
           </ClipPath>
-          <ClipPath>
+          <ClipPath id={logoClipPath}>
             <Rect
-              testID="rect.clip-logo"
+              testID={`rect.${logoClipPath}`}
               width={size}
               height={size}
               rx={borderRadius}
@@ -64,19 +67,23 @@ export const useLogo = (
             width={backgroundSize}
             height={backgroundSize}
             fill={backgroundColor}
-            clipPath="url(#clip-logo-background)"
+            clipPath={`url(#${logoBackgroundClipPath})`}
           />
         </G>
         <G x={margin} y={margin} testID="g.logo-container">
           {LogoElement !== undefined ? (
-            <LogoElement width={size} height={size} />
+            <LogoElement
+              width={size}
+              height={size}
+              clipPath={`url(#${logoClipPath})`}
+            />
           ) : null}
           {logoImage !== undefined ? (
             <Image
               width={size}
               height={size}
               href={logoImage}
-              clipPath="url(#clip-logo)"
+              clipPath={`url(#${logoClipPath})`}
             />
           ) : null}
         </G>

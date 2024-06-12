@@ -1,6 +1,6 @@
 import {renderHook} from '@testing-library/react-native';
-import {useQRMatrix} from 'hooks/useQRMatrix';
-import {ErrorCorrectionLevel} from 'types';
+import {useQRMatrix} from '../useQRMatrix';
+import {ErrorCorrectionLevel} from '../../types';
 import QRCode from 'qrcode';
 
 describe('useQRCodeGenerator', () => {
