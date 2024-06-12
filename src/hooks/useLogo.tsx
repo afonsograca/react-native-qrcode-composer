@@ -27,7 +27,7 @@ export const useLogo = (
     const {
       size = qrCodeSize * 0.2,
       backgroundColor = 'transparent',
-      margin = 2,
+      margin = 0,
       borderRadius = 0,
     } = logoStyle ?? {};
 

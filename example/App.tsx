@@ -83,10 +83,14 @@ function App(): React.JSX.Element {
             <QRCode size={200} />
           </Section>
           <Section title="With color">
-            <QRCode style={{color: 'grey', backgroundColor: 'yellow'}} />
+            <QRCode style={{color: '#753a88', backgroundColor: '#FF0099'}} />
           </Section>
           <Section title="With gradient">
-            <QRCode style={{color: 'grey', backgroundColor: 'yellow'}} />
+            <QRCode
+              style={{
+                linearGradient: ['#FBD786', '#f7797d'],
+              }}
+            />
           </Section>
           <Section title="Round Detection Markers">
             <QRCode
@@ -135,7 +139,11 @@ function App(): React.JSX.Element {
           <Section title="Logo with styling">
             <QRCode
               logo={Logo}
-              logoStyle={{backgroundColor: 'red', margin: 8, borderRadius: 1}}
+              logoStyle={{
+                backgroundColor: '#99f2c8',
+                margin: 8,
+                borderRadius: 1,
+              }}
             />
           </Section>
           <Section title="Failing to generate a QR code">
