@@ -1,0 +1,16 @@
+{
+  "git": {
+    "commitMessage": ":bookmark:(release): release version ${version}"
+  },
+  "github": {
+    "release": true
+  },
+  "npm": {
+    "publish": true
+  },
+  "plugins": {
+    "@release-it/keep-a-changelog": {
+      "filename": "CHANGELOG.md"
+    }
+  }
+}

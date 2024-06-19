@@ -3,6 +3,7 @@
   "version": "0.1.0",
   "scripts": {
     "prepare": "bob build",
+    "release": "release-it",
     "build": "tsc",
     "lint": " eslint .",
     "format": "prettier --write src",
@@ -27,6 +28,9 @@
     "react-native-qrcode",
     "qrcode-composer"
   ],
+  "publishConfig": {
+    "registry": "https://registry.npmjs.org/"
+  },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/afonsograca/react-native-qrcode-composer.git"
@@ -53,6 +57,7 @@
     "@babel/preset-typescript": "^7.24.6",
     "@eslint/js": "^9.3.0",
     "@react-native/eslint-config": "^0.74.83",
+    "@release-it/keep-a-changelog": "^5.0.0",
     "@testing-library/jest-native": "^5.4.3",
     "@testing-library/react-hooks": "^8.0.1",
     "@testing-library/react-native": "^12.5.0",
@@ -78,6 +83,7 @@
     "react-native-builder-bob": "^0.23.2",
     "react-native-svg": ">=13.2.0",
     "react-test-renderer": "^18.3.1",
+    "release-it": "^17.3.0",
     "ts-jest": "^29.1.4",
     "typescript": "^5.4.5",
     "typescript-eslint": "^7.11.0"
