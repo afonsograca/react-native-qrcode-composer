@@ -5,7 +5,7 @@ export default {
       'babel-jest',
       {
         extends: './babel.config.cjs',
-        plugins: [['@babel/plugin-proposal-private-methods', {loose: true}]],
+        plugins: [['@babel/plugin-transform-private-methods', {loose: true}]],
       },
     ],
   },

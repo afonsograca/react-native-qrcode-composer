@@ -101,8 +101,8 @@ exports[`QRCode Snapshots renders a QR code with a logo 1`] = `
           0,
           -0,
           1,
-          38,
-          38,
+          40,
+          40,
         ]
       }
       testID="react-native-qrcode-composer.logo"
@@ -124,11 +124,11 @@ exports[`QRCode Snapshots renders a QR code with a logo 1`] = `
                 "type": 0,
               }
             }
-            height={24}
+            height={20}
             rx={0}
             ry={0}
             testID="rect.logo-background-clip-path"
-            width={24}
+            width={20}
             x={0}
             y={0}
           />
@@ -175,14 +175,14 @@ exports[`QRCode Snapshots renders a QR code with a logo 1`] = `
               "type": 0,
             }
           }
-          height={24}
+          height={20}
           propList={
             [
               "fill",
             ]
           }
           testID="rect.logo-background"
-          width={24}
+          width={20}
           x={0}
           y={0}
         />
@@ -198,10 +198,10 @@ exports[`QRCode Snapshots renders a QR code with a logo 1`] = `
           [
             1,
             0,
-            -0,
+            0,
             1,
-            2,
-            2,
+            0,
+            0,
           ]
         }
         testID="g.logo-container"
