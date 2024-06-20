@@ -7,6 +7,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.1.3] - 2024-06-20
+
 ### Added
 
 - Ability to display QR codes with customization
@@ -17,5 +19,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 Project Initialization
 
-[unreleased]: https://github.com/afonsograca/react-native-qr-code/compare/0.1.2...HEAD
+[unreleased]: https://github.com/afonsograca/react-native-qr-code/compare/0.1.3...HEAD
+[0.1.3]: https://github.com/afonsograca/react-native-qr-code/compare/0.1.2...0.1.3
 [0.1.2]: https://github.com/afonsograca/react-native-qr-code/compare/0.1.1...0.1.2
