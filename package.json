@@ -1,6 +1,6 @@
 {
   "name": "react-native-qrcode-composer",
-  "version": "0.1.3",
+  "version": "0.1.4",
   "scripts": {
     "prepare": "bob build",
     "release": "release-it",
