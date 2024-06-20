@@ -7,18 +7,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
-## [0.1.2] - 2024-06-20
-
-### Fixed
-
-- Set the correct path of the library's types
-- Remove unnecessary test code from the npm src
-
-## [0.1.1] - 2024-06-20
-
 ### Added
 
 - Ability to display QR codes with customization
+
+## [0.1.2] - 2024-06-20
 
 ## [0.1.0] - 2024-04-28
 
