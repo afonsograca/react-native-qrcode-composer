@@ -27,7 +27,8 @@ example/
 *.sublime-workspace
 
 # Testing and Coverage
-__tests__/
+**/__tests__/
+**/__mocks__/
 coverage/
 *.test.js
 *.spec.js
