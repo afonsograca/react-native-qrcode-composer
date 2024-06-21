@@ -36,17 +36,13 @@ export const QRCode = React.memo(
 
     if (matrixResult.status === 'success') {
       const {path} = matrixResult.value;
+      const actualSize = size + quietZone * 2;
       return (
         <Svg
           ref={getRef}
-          viewBox={[
-            -quietZone,
-            -quietZone,
-            size + quietZone * 2,
-            size + quietZone * 2,
-          ].join(' ')}
-          width={size}
-          height={size}
+          viewBox={[-quietZone, -quietZone, actualSize, actualSize].join(' ')}
+          width={actualSize}
+          height={actualSize}
           testID={`${testID}.qrcode`}
         >
           {linearGradient !== undefined ? (
@@ -75,9 +71,11 @@ export const QRCode = React.memo(
             <Rect
               x={-quietZone}
               y={-quietZone}
-              width={size + quietZone * 2}
-              height={size + quietZone * 2}
+              width={actualSize}
+              height={actualSize}
               fill={backgroundColor}
+              rx={style?.cornerRadius}
+              ry={style?.cornerRadius}
             />
           </G>
           <G>

@@ -7,6 +7,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+- The ability to add a corner radius to the QR code's quiet zone
+
 ## [0.1.4] - 2024-06-21
 
 ### Added

@@ -94,6 +94,7 @@ The following sections provide more details about these props and how to use the
 | `color` | `string` | Yes | `black` | The color of the QR code pattern |
 | `backgroundColor` | `string` | Yes | `white` | The background color of the entire QR code |
 | `quietZone` | number | Yes | `0` | The margin around the QR code |
+| `cornerRadius` | number | Yes | `0` | The corner radius applied the QR code's quiet zone |
 | `errorCorrectionLevel` | `ErrorCorrectionLevel` | Yes | `M` | The error correction level, enhancing robustness |
 | `linearGradient` | `[ColorValue, ColorValue]` | Yes | `undefined` | The colors for a linear gradient effect |
 | `gradientDirection` | `[NumberProp, NumberProp, NumberProp, NumberProp]` | Yes | `['0%', '0%', '100%', '100%']` | The directions for gradient application |
