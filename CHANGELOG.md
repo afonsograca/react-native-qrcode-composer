@@ -7,6 +7,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.2.0] - 2024-06-21
+
 ### Added
 - The ability to add a corner radius to the QR code's quiet zone
 
@@ -22,6 +24,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 Project Initialization
 
-[unreleased]: https://github.com/afonsograca/react-native-qr-code/compare/0.1.4...HEAD
+[unreleased]: https://github.com/afonsograca/react-native-qr-code/compare/0.2.0...HEAD
 
+[0.2.0]: https://github.com/afonsograca/react-native-qr-code/compare/0.1.4...0.2.0
 [0.1.4]: https://github.com/afonsograca/react-native-qr-code/compare/0.1.3...0.1.4
