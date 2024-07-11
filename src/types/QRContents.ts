@@ -108,5 +108,3 @@ interface Geolocation {
   longitude: number;
   altitude?: number;
 }
-
-};
