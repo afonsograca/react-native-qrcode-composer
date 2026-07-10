@@ -130,7 +130,9 @@ const encodeVCardContents = (contents: VCard): string => {
     [
       'N',
       encodeField(contents.name, name =>
-        Array.isArray(name) ? name.map(escapeTextValue).join(';') : name,
+        Array.isArray(name)
+          ? name.map(escapeTextValue).join(';')
+          : escapeTextValue(name),
       ),
     ],
     ['NICKNAME', text(contents.nickname)],

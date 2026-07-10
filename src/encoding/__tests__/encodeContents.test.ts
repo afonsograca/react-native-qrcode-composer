@@ -565,13 +565,24 @@ describe('QRContents', () => {
       );
     });
 
-    it('should pass a preformatted name string through as-is', () => {
+    it('should escape a name provided as a string', () => {
       const vcard = {
         type: 'vcard' as const,
         fullName: 'John Doe',
         name: 'Doe;John;;;',
       };
-      expect(encodeQRCodeContents(vcard)).toContain('N:Doe;John;;;');
+      expect(encodeQRCodeContents(vcard)).toContain('N:Doe\\;John\\;\\;\\;');
+    });
+
+    it('should escape commas and semicolons in a string name', () => {
+      const vcard = {
+        type: 'vcard' as const,
+        fullName: 'Ada Lovelace',
+        name: 'Lovelace, Ada; Countess',
+      };
+      expect(encodeQRCodeContents(vcard)).toContain(
+        'N:Lovelace\\, Ada\\; Countess',
+      );
     });
 
     it('should format birthday and anniversary as YYYYMMDD', () => {
