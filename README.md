@@ -61,7 +61,7 @@ import logo from 'assets/logo.png';
 
 ## Props
 
-The `react-native-qrcode-composer` library provides several props that you can use to customize the QR code and its appearance. These props allow you to specify the content of the QR code, its size, and the logo that appears in the center of the QR code, among other things. You can also specify a function that is called when an error occurs. 
+The `react-native-qrcode-composer` library provides several props that you can use to customize the QR code and its appearance. These props allow you to specify the content of the QR code, its size, and the logo that appears in the center of the QR code, among other things. You can also specify a function that is called when an error occurs; if encoding or rendering fails, the component renders nothing (`null`) and invokes `onError` when provided.
 
 The following sections provide more details about these props and how to use them.
 
@@ -69,14 +69,204 @@ The following sections provide more details about these props and how to use the
 
 | Property | Type | Optional | Default | Description |
 |---|---|---|---|---|
-| `value` | string | Yes | `'QR code message'` | The content to be encoded in the QR code |
+| `value` | [`QRCodeContents`](#content-types) | No | — | The content to be encoded in the QR code — a plain string or one of the typed [content objects](#content-types) |
 | `size` | number | Yes | `100` | The size of the QR code in pixels |
 | `logo` | `LogoProp` | Yes | `undefined` | A custom logo to be displayed at the center of the QR code |
 | `logoStyle` | [LogoStyle](#logostyle) | Yes | `undefined` | The style of the logo |
 | `style` | [QRCodeStyle](#qrcodestyle) | Yes | `undefined` | The style of the QR code container |
-| `getRef` | `React.Ref<Svg>` | Yes | `undefined` | A ref to the QR code SVG element for direct access |
-| `onError` | `(error: Error) => void` | Yes | `undefined` | Callback function triggered if an error occurs during rendering |
+| `ref` | `React.Ref<Svg>` | Yes | `undefined` | A ref to the underlying `react-native-svg` `Svg` element |
+| `getRef` | `React.Ref<Svg>` | Yes | `undefined` | **Deprecated** — use `ref` instead. A ref to the QR code SVG element for direct access |
+| `onError` | `(error: Error) => void` | Yes | `undefined` | Callback function triggered if an error occurs during encoding or rendering. When an error occurs, the component renders nothing (`null`) |
 | `testID` | `string` | Yes | `'react-native-qrcode-composer'` | Identification prefix for the internal parts of the component |
+
+### Content types
+
+The `value` prop accepts a `QRCodeContents` value: either a plain `string` (encoded as-is) or one of the typed content objects below, discriminated by their `type` field. Typed objects are encoded into the appropriate payload format (mailto, WIFI, vCard, iCalendar, etc.) for you. `QRCodeContents` and all of the content interfaces (`PlainText`, `URL`, `Email`, `Phone`, `SMS`, `WiFi`, `Geolocation`, `VCard`, `MeCard`, `CalendarEvent`) are exported from the package.
+
+```typescript
+// Plain string
+<QRCode value="Any message" />
+
+// URL
+<QRCode value={{type: 'url', url: 'https://github.com/afonsograca/react-native-qrcode-composer'}} />
+```
+
+#### PlainText
+
+| Property | Type | Optional | Description |
+|---|---|---|---|
+| `type` | `'plain-text'` | No | Content type discriminator |
+| `content` | string | No | The text to encode |
+
+#### URL
+
+| Property | Type | Optional | Description |
+|---|---|---|---|
+| `type` | `'url'` | No | Content type discriminator |
+| `url` | string | No | The URL to encode |
+
+#### Email
+
+| Property | Type | Optional | Description |
+|---|---|---|---|
+| `type` | `'email'` | No | Content type discriminator |
+| `email` | string | No | The recipient's email address |
+| `subject` | string | Yes | The email subject |
+| `body` | string | Yes | The email body |
+| `cc` | string | Yes | Carbon copy recipient |
+| `bcc` | string | Yes | Blind carbon copy recipient |
+
+#### Phone
+
+| Property | Type | Optional | Description |
+|---|---|---|---|
+| `type` | `'phone'` | No | Content type discriminator |
+| `telephone` | string | No | The phone number to dial |
+
+#### SMS
+
+| Property | Type | Optional | Description |
+|---|---|---|---|
+| `type` | `'sms'` | No | Content type discriminator |
+| `phoneNumber` | string | No | The phone number to message |
+| `message` | string | Yes | A prefilled message |
+
+#### WiFi
+
+| Property | Type | Optional | Description |
+|---|---|---|---|
+| `type` | `'wifi'` | No | Content type discriminator |
+| `security` | `'WEP' \| 'WPA' \| 'WPA3' \| 'nopass'` | No | The network's security type |
+| `ssid` | string | No | The network name |
+| `password` | string | Yes | The network password |
+| `hidden` | boolean | Yes | Whether the network is hidden |
+
+```typescript
+<QRCode
+  value={{
+    type: 'wifi',
+    security: 'WPA',
+    ssid: 'Home Network',
+    password: 'hunter2',
+  }}
+/>
+```
+
+#### Geolocation
+
+| Property | Type | Optional | Description |
+|---|---|---|---|
+| `type` | `'geolocation'` | No | Content type discriminator |
+| `latitude` | number | No | The latitude coordinate |
+| `longitude` | number | No | The longitude coordinate |
+| `altitude` | number | Yes | The altitude |
+
+#### VCard
+
+| Property | Type | Optional | Description |
+|---|---|---|---|
+| `type` | `'vcard'` | No | Content type discriminator |
+| `fullName` | string | No | The contact's full name (`FN`) |
+| `version` | `'2.1' \| '3.0' \| '4.0'` | Yes | The vCard version; defaults to `'4.0'` |
+| `address` | string | Yes | Postal address (`ADR`) |
+| `anniversary` | `Date` | Yes | Anniversary date (`ANNIVERSARY`) |
+| `birthday` | `Date` | Yes | Birth date (`BDAY`) |
+| `calendarAddressURI` | string | Yes | Calendar address URI (`CALADRURI`) |
+| `calendarURI` | string | Yes | Calendar URI (`CALURI`) |
+| `categories` | `string[]` | Yes | Categories (`CATEGORIES`) |
+| `clientPIDMap` | string | Yes | Client PID map (`CLIENTPIDMAP`) |
+| `email` | string | Yes | Email address (`EMAIL`) |
+| `facebookURL` | string | Yes | Facebook URL (`FBURL`) |
+| `gender` | `'M' \| 'F' \| 'O' \| 'N' \| 'U'` | Yes | Gender (`GENDER`) |
+| `geo` | string | Yes | Geographic position (`GEO`) |
+| `instantMessenger` | string | Yes | Instant messenger handle (`IMPP`) |
+| `key` | string | Yes | Public key (`KEY`) |
+| `kind` | string | Yes | Kind of object (`KIND`) |
+| `language` | string | Yes | Preferred language (`LANG`) |
+| `logo` | string | Yes | Logo (`LOGO`) |
+| `member` | string | Yes | Group member (`MEMBER`) |
+| `name` | `string \| string[]` | Yes | Structured name components (`N`) |
+| `nickname` | string | Yes | Nickname (`NICKNAME`) |
+| `note` | string | Yes | Note (`NOTE`) |
+| `organization` | string | Yes | Organization (`ORG`) |
+| `productID` | string | Yes | Product identifier (`PRODID`) |
+| `related` | string | Yes | Related entity (`RELATED`) |
+| `role` | string | Yes | Role (`ROLE`) |
+| `sound` | string | Yes | Sound (`SOUND`) |
+| `source` | string | Yes | Source (`SOURCE`) |
+| `telephone` | string | Yes | Phone number (`TEL`) |
+| `title` | string | Yes | Job title (`TITLE`) |
+| `timezone` | string | Yes | Time zone (`TZ`) |
+| `uid` | string | Yes | Unique identifier (`UID`) |
+| `url` | string | Yes | Website URL (`URL`) |
+| `xml` | string | Yes | Extended XML data (`XML`) |
+
+```typescript
+<QRCode
+  value={{
+    type: 'vcard',
+    fullName: 'Ada Lovelace',
+    organization: 'Analytical Engines Ltd',
+    telephone: '+44 20 7946 0958',
+    email: 'ada@example.com',
+    birthday: new Date(1815, 11, 10),
+  }}
+/>
+```
+
+#### MeCard
+
+| Property | Type | Optional | Description |
+|---|---|---|---|
+| `type` | `'mecard'` | No | Content type discriminator |
+| `firstName` | string | No | The contact's first name |
+| `lastName` | string | No | The contact's last name |
+| `address` | string | Yes | Postal address |
+| `birthday` | `Date` | Yes | Birth date |
+| `email` | string | Yes | Email address |
+| `nickname` | string | Yes | Nickname |
+| `note` | string | Yes | Note |
+| `sound` | string | Yes | Phonetic reading of the name |
+| `telephone` | string | Yes | Phone number |
+| `videoCall` | string | Yes | Video call address |
+| `website` | string | Yes | Website URL |
+
+#### CalendarEvent
+
+| Property | Type | Optional | Description |
+|---|---|---|---|
+| `type` | `'calendar-event'` | No | Content type discriminator |
+| `uid` | string | No | Unique identifier for the event |
+| `dtStart` | `Date` | No | Event start date and time |
+| `dtEnd` | `Date` | Yes | Event end date and time |
+| `duration` | string | Yes | Event duration (used when `dtEnd` is not set) |
+| `summary` | string | Yes | Short summary of the event |
+| `description` | string | Yes | Longer description |
+| `location` | string | Yes | Event location |
+| `url` | string | Yes | Associated URL |
+| `geo` | string | Yes | Geographic position |
+| `categories` | `string[]` | Yes | Event categories |
+| `status` | `'TENTATIVE' \| 'CONFIRMED' \| 'CANCELLED'` | Yes | Event status |
+| `transp` | `'TRANSPARENT' \| 'OPAQUE'` | Yes | Time transparency |
+| `organizer` | string | Yes | Event organizer |
+| `attach` | string | Yes | Attachment |
+| `priority` | number | Yes | Priority, clamped to 0–9 |
+| `rrule` | string | Yes | Recurrence rule |
+| `sequence` | number | Yes | Revision sequence number |
+| `class` | `'PUBLIC' \| 'PRIVATE' \| 'CONFIDENTIAL'` | Yes | Access classification |
+
+```typescript
+<QRCode
+  value={{
+    type: 'calendar-event',
+    uid: 'launch-party@example.com',
+    dtStart: new Date(Date.UTC(2026, 7, 1, 18, 0)),
+    dtEnd: new Date(Date.UTC(2026, 7, 1, 21, 0)),
+    summary: 'Launch party',
+    location: 'Lisbon',
+  }}
+/>
+```
 
 ### LogoStyle
 
@@ -91,31 +281,35 @@ The following sections provide more details about these props and how to use the
 
 | Property | Type | Optional | Default | Description |
 | --- | --- | --- | --- | --- |
-| `color` | `string` | Yes | `black` | The color of the QR code pattern |
-| `backgroundColor` | `string` | Yes | `white` | The background color of the entire QR code |
-| `quietZone` | number | Yes | `0` | The margin around the QR code |
-| `cornerRadius` | number | Yes | `0` | The corner radius applied the QR code's quiet zone |
+| `color` | `ColorValue` | Yes | `black` | The color of the QR code pattern |
+| `backgroundColor` | `ColorValue` | Yes | `white` | The background color of the entire QR code |
+| `quietZone` | number | Yes | `0` | The margin around the QR code, in pixels |
+| `cornerRadius` | number | Yes | `0` | The corner radius, in absolute pixels, applied to the QR code's quiet zone |
 | `errorCorrectionLevel` | `ErrorCorrectionLevel` | Yes | `M` | The error correction level, enhancing robustness |
 | `linearGradient` | `[ColorValue, ColorValue]` | Yes | `undefined` | The colors for a linear gradient effect |
 | `gradientDirection` | `[NumberProp, NumberProp, NumberProp, NumberProp]` | Yes | `['0%', '0%', '100%', '100%']` | The directions for gradient application |
 | `detectionMarkerOptions` | [DetectionMarkerOptions](#detectionmarkeroptions) | Yes | `undefined` | Options for styling the detection markers |
 | `patternOptions` | [PatternOptions](#patternoptions) | Yes | `undefined` | Options for modifying the QR pattern |
 
+> **Note on sizing:** when `quietZone` is greater than `0`, the rendered element measures `size + 2 * quietZone` pixels on each side — the `size` prop defines the QR code area, not the total footprint.
+
 ### DetectionMarkerOptions
 
 | Property | Type | Optional | Default | Description |
 | --- | --- | --- | --- | --- |
 | `connected` | boolean | Yes | `true` | Indicates if the blocks that make up the marker are connected |
-| `cornerRadius` | number | Yes | `0` | Corner radius applied to the detection markers. Note: This does not take precedence over `outerCornerRadius` or `innerCornerRadius` |
-| `outerCornerRadius` | number | Yes | `0` | Specific corner radius for the outer part of the markers |
-| `innerCornerRadius` | number | Yes | `0` | Specific corner radius for the inner part of the markers |
+| `cornerRadius` | number | Yes | `0` | Corner radius applied to the detection markers, as a fraction (0–1) of the marker size. Note: This does not take precedence over `outerCornerRadius` or `innerCornerRadius` |
+| `outerCornerRadius` | number | Yes | `0` | Specific corner radius for the outer part of the markers, as a fraction (0–1) of the marker size |
+| `innerCornerRadius` | number | Yes | `0` | Specific corner radius for the inner part of the markers, as a fraction (0–1) of the marker size |
 
 ### PatternOptions
 
 | Property | Type | Optional | Default | Description |
 | --- | --- | --- | --- | --- |
 | `connected` | boolean | Yes | `false` | Indicates if the blocks in the QR code pattern are connected |
-| `cornerRadius` | number | Yes | `0` | Corner radius for each block in the QR code pattern |
+| `cornerRadius` | number | Yes | `0` | Corner radius for each block in the QR code pattern, as a fraction (0–1) of the module size |
+
+> **Note on corner radius units:** `style.cornerRadius` (the background rectangle) is expressed in absolute pixels, whereas `patternOptions.cornerRadius` and the `detectionMarkerOptions` corner radii are fractions between 0 and 1 of the module/marker size.
 
 ## Try it out
 
