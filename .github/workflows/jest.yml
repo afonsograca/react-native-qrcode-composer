@@ -23,5 +23,11 @@ jobs:
       - name: Install dependencies
         run: yarn --frozen-lockfile
 
+      - name: Lint
+        run: yarn lint
+
+      - name: Typecheck
+        run: npx tsc --noEmit
+
       - name: Run Jest tests
         run: yarn test
