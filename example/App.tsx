@@ -15,12 +15,12 @@ import type {QRCodeProps} from 'react-native-qrcode-composer';
 import Logo from './assets/placeholder.svg';
 import placeholder from './assets/placeholder.png';
 
-type ThemeColors = {
+interface ThemeColors {
   background: ColorValue;
   surface: ColorValue;
   title: ColorValue;
   error: ColorValue;
-};
+}
 
 const palette: Record<'light' | 'dark', ThemeColors> = {
   light: {
@@ -56,10 +56,10 @@ function Section({children, title}: SectionProps): React.JSX.Element {
   );
 }
 
-type Demo = {
+interface Demo {
   title: string;
   props: QRCodeProps;
-};
+}
 
 const demos: Demo[] = [
   {title: 'Simple', props: {value: 'Simple QR code'}},
@@ -138,7 +138,12 @@ const demos: Demo[] = [
     props: {
       value: 'QR code with a styled logo',
       logo: Logo,
-      logoStyle: {backgroundColor: '#99f2c8', margin: 8, borderRadius: 1},
+      logoStyle: {
+        size: 20,
+        backgroundColor: '#99f2c8',
+        margin: 8,
+        borderRadius: 10,
+      },
     },
   },
   {
@@ -243,7 +248,12 @@ function ErrorDemo(): React.JSX.Element {
   const [error, setError] = useState<string | null>(null);
   return (
     <Section title="Failing to generate a QR code">
-      <QRCode value="" onError={e => setError(e.message)} />
+      <QRCode
+        value=""
+        onError={e => {
+          setError(e.message);
+        }}
+      />
       {error !== null && (
         <Text style={[styles.errorText, {color: colors.error}]}>{error}</Text>
       )}
