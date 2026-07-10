@@ -167,7 +167,6 @@ The `value` prop accepts a `QRCodeContents` value: either a plain `string` (enco
 |---|---|---|---|
 | `type` | `'vcard'` | No | Content type discriminator |
 | `fullName` | string | No | The contact's full name (`FN`) |
-| `version` | `'2.1' \| '3.0' \| '4.0'` | Yes | The vCard version; defaults to `'4.0'` |
 | `address` | string | Yes | Postal address (`ADR`) |
 | `anniversary` | `Date` | Yes | Anniversary date (`ANNIVERSARY`) |
 | `birthday` | `Date` | Yes | Birth date (`BDAY`) |

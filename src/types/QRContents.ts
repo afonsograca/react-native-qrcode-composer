@@ -103,7 +103,7 @@ const encodeGeolocationContents = (contents: Geolocation): string =>
 
 const encodeVCardContents = (contents: VCard): string => {
   const fields: [string, FieldValue][] = [
-    ['VERSION', contents.version ?? '4.0'],
+    ['VERSION', '4.0'],
     ['FN', text(contents.fullName)],
     ['ADR', text(contents.address)],
     ['ANNIVERSARY', date(contents.anniversary)],
@@ -266,7 +266,6 @@ export interface Geolocation {
 
 export interface VCard {
   type: 'vcard';
-  version?: '2.1' | '3.0' | '4.0';
   address?: string;
   anniversary?: Date;
   birthday?: Date;

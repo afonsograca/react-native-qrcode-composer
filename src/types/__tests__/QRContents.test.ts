@@ -428,7 +428,6 @@ describe('QRContents', () => {
     it('should encode vCard with all fields correctly', () => {
       const vcard = {
         type: 'vcard' as const,
-        version: '3.0' as const,
         fullName: 'John Doe',
         address: '123 Main St',
         anniversary: new Date(2010, 5, 15),
@@ -466,7 +465,7 @@ describe('QRContents', () => {
       expect(encodeQRCodeContents(vcard)).toEqual(
         [
           'BEGIN:VCARD',
-          'VERSION:3.0',
+          'VERSION:4.0',
           'FN:John Doe',
           'ADR:123 Main St',
           'ANNIVERSARY:20100615',
