@@ -64,13 +64,36 @@ describe('Logo', () => {
         logo: Logo,
         logoStyle: {borderRadius},
       });
-      const logoBackground = findChildComponent(
+      const logoClip = findChildComponent(
         logoComponent,
         Rect,
         'rect.logo-clip-path',
       );
-      expect(logoBackground?.props).toEqual(
+      expect(logoClip?.props).toEqual(
         expect.objectContaining({rx: borderRadius, ry: borderRadius}),
+      );
+    });
+
+    it('should round the background rect corners in pixels, tracking the margin', () => {
+      const borderRadius = 10;
+      const margin = 4;
+      const logoComponent = LogoView({
+        qrCodeSize: 100,
+        testID: '',
+        instanceId: 1,
+        logo: Logo,
+        logoStyle: {borderRadius, margin},
+      });
+      const backgroundClip = findChildComponent(
+        logoComponent,
+        Rect,
+        'rect.logo-background-clip-path',
+      );
+      expect(backgroundClip?.props).toEqual(
+        expect.objectContaining({
+          rx: borderRadius + margin,
+          ry: borderRadius + margin,
+        }),
       );
     });
   });

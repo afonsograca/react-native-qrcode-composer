@@ -48,7 +48,7 @@ export const Logo = ({
   const marginOffset = margin * 2;
   const position = (qrCodeSize - size - marginOffset) / 2;
   const backgroundSize = size + marginOffset;
-  const backgroundBorderRadius = borderRadius * (backgroundSize / 2);
+  const backgroundBorderRadius = borderRadius + margin;
 
   const LogoElement = isReactComponent(logo) ? logo : undefined;
   const logoImage = isImageSourcePropType(logo) ? logo : undefined;
