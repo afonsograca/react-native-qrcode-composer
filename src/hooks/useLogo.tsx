@@ -17,6 +17,7 @@ const logoClipPath = 'logo-clip-path';
 export const useLogo = (
   qrCodeSize: number,
   testId: string,
+  instanceId: number,
   logo?: LogoProp,
   logoStyle?: LogoStyle,
 ) => {
@@ -24,6 +25,8 @@ export const useLogo = (
     if (logo === undefined) {
       return null;
     }
+    const logoBackgroundClipPathId = `${logoBackgroundClipPath}-${instanceId.toString()}`;
+    const logoClipPathId = `${logoClipPath}-${instanceId.toString()}`;
     const {
       size = qrCodeSize * 0.2,
       backgroundColor = 'transparent',
@@ -42,7 +45,7 @@ export const useLogo = (
     return (
       <G x={position} y={position} testID={testId}>
         <Defs>
-          <ClipPath id={logoBackgroundClipPath}>
+          <ClipPath id={logoBackgroundClipPathId}>
             <Rect
               testID={`rect.${logoBackgroundClipPath}`}
               width={backgroundSize}
@@ -51,7 +54,7 @@ export const useLogo = (
               ry={backgroundBorderRadius}
             />
           </ClipPath>
-          <ClipPath id={logoClipPath}>
+          <ClipPath id={logoClipPathId}>
             <Rect
               testID={`rect.${logoClipPath}`}
               width={size}
@@ -67,7 +70,7 @@ export const useLogo = (
             width={backgroundSize}
             height={backgroundSize}
             fill={backgroundColor}
-            clipPath={`url(#${logoBackgroundClipPath})`}
+            clipPath={`url(#${logoBackgroundClipPathId})`}
           />
         </G>
         <G x={margin} y={margin} testID="g.logo-container">
@@ -75,7 +78,7 @@ export const useLogo = (
             <LogoElement
               width={size}
               height={size}
-              clipPath={`url(#${logoClipPath})`}
+              clipPath={`url(#${logoClipPathId})`}
             />
           ) : null}
           {logoImage !== undefined ? (
@@ -83,12 +86,12 @@ export const useLogo = (
               width={size}
               height={size}
               href={logoImage}
-              clipPath={`url(#${logoClipPath})`}
+              clipPath={`url(#${logoClipPathId})`}
             />
           ) : null}
         </G>
       </G>
     );
-  }, [logo, logoStyle, qrCodeSize]);
+  }, [logo, logoStyle, qrCodeSize, testId, instanceId]);
   return {logoComponent};
 };

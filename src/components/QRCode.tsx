@@ -1,4 +1,4 @@
-import React, {useCallback, useEffect} from 'react';
+import React, {useCallback, useEffect, useState} from 'react';
 import Svg, {Defs, G, Path, Rect, LinearGradient, Stop} from 'react-native-svg';
 import {useQRMatrix} from '../hooks/useQRMatrix';
 import {useLogo} from '../hooks/useLogo';
@@ -6,6 +6,9 @@ import {type QRCodeProps} from '../types';
 import {encodeQRCodeContents} from '../types/QRContents';
 
 export const DEFAULT_TEST_ID = 'react-native-qrcode-composer';
+
+// Instance counter instead of React.useId: peerDependencies allow React 17.
+let instanceCounter = 0;
 
 const assignRef = <T,>(ref: React.Ref<T> | undefined, value: T | null) => {
   if (typeof ref === 'function') {
@@ -30,6 +33,7 @@ export const QRCode = React.memo(
       }: QRCodeProps,
       ref,
     ) => {
+      const [instanceId] = useState(() => ++instanceCounter);
       const matrixResult = useQRMatrix({
         value: encodeQRCodeContents(value),
         size,
@@ -42,7 +46,13 @@ export const QRCode = React.memo(
         linearGradient,
         gradientDirection = ['0%', '0%', '100%', '100%'],
       } = style ?? {};
-      const {logoComponent} = useLogo(size, `${testID}.logo`, logo, logoStyle);
+      const {logoComponent} = useLogo(
+        size,
+        `${testID}.logo`,
+        instanceId,
+        logo,
+        logoStyle,
+      );
 
       const handleRef = useCallback(
         (instance: Svg | null) => {
@@ -64,6 +74,7 @@ export const QRCode = React.memo(
 
       const {path} = matrixResult.value;
       const actualSize = size + quietZone * 2;
+      const gradientId = `grad-${instanceId.toString()}`;
       return (
         <Svg
           ref={handleRef}
@@ -75,7 +86,7 @@ export const QRCode = React.memo(
           {linearGradient !== undefined ? (
             <Defs>
               <LinearGradient
-                id="grad"
+                id={gradientId}
                 x1={gradientDirection[0]}
                 y1={gradientDirection[1]}
                 x2={gradientDirection[2]}
@@ -108,7 +119,9 @@ export const QRCode = React.memo(
           <G>
             <Path
               d={path}
-              fill={linearGradient !== undefined ? 'url(#grad)' : color}
+              fill={
+                linearGradient !== undefined ? `url(#${gradientId})` : color
+              }
               fillRule="evenodd"
               testID={`${testID}.path`}
             />

@@ -115,7 +115,7 @@ exports[`QRCode Snapshots renders a QR code with a logo 1`] = `
               "type": 0,
             }
           }
-          name="logo-background-clip-path"
+          name="logo-background-clip-path-2"
         >
           <RNSVGRect
             fill={
@@ -140,7 +140,7 @@ exports[`QRCode Snapshots renders a QR code with a logo 1`] = `
               "type": 0,
             }
           }
-          name="logo-clip-path"
+          name="logo-clip-path-2"
         >
           <RNSVGRect
             fill={
@@ -168,7 +168,7 @@ exports[`QRCode Snapshots renders a QR code with a logo 1`] = `
         }
       >
         <RNSVGRect
-          clipPath="logo-background-clip-path"
+          clipPath="logo-background-clip-path-2"
           fill={
             {
               "payload": 0,
