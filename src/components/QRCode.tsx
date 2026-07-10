@@ -1,15 +1,28 @@
-import React, {useCallback, useEffect, useState} from 'react';
+import React, {useCallback, useEffect, useRef, useState} from 'react';
 import Svg, {Defs, G, Path, Rect, LinearGradient, Stop} from 'react-native-svg';
 import {useQRMatrix} from '../hooks/useQRMatrix';
 import {useLogo} from '../hooks/useLogo';
 import {type QRCodeProps} from '../types';
 import {encodeQRCodeContents} from '../types/QRContents';
+import type {QRCodeContents} from '../types/QRContents';
+import type {Result} from '../types/result';
 import {svgLocalId} from '../utils/svgId';
 
 export const DEFAULT_TEST_ID = 'react-native-qrcode-composer';
 
 // Instance counter instead of React.useId: peerDependencies allow React 17.
 let instanceCounter = 0;
+
+const encodeContents = (contents: QRCodeContents): Result<string> => {
+  try {
+    return {status: 'success', value: encodeQRCodeContents(contents)};
+  } catch (error) {
+    return {
+      status: 'failure',
+      error: error instanceof Error ? error : new Error(String(error)),
+    };
+  }
+};
 
 const assignRef = <T,>(ref: React.Ref<T> | undefined, value: T | null) => {
   if (typeof ref === 'function') {
@@ -35,8 +48,11 @@ export const QRCode = React.memo(
       ref,
     ) => {
       const [instanceId] = useState(() => ++instanceCounter);
+      // Not memoized on `value`: consumers pass inline literals; the encoded
+      // string is the stable matrix-memo key.
+      const encodeResult = encodeContents(value);
       const matrixResult = useQRMatrix({
-        value: encodeQRCodeContents(value),
+        value: encodeResult.status === 'success' ? encodeResult.value : '',
         size,
         ...style,
       });
@@ -63,13 +79,28 @@ export const QRCode = React.memo(
         [ref, getRef],
       );
 
-      useEffect(() => {
-        if (matrixResult.status === 'failure') {
-          onError?.(matrixResult.error);
-        }
-      }, [matrixResult, onError]);
+      const error =
+        encodeResult.status === 'failure'
+          ? encodeResult.error
+          : matrixResult.status === 'failure'
+            ? matrixResult.error
+            : undefined;
 
-      if (matrixResult.status !== 'success') {
+      const lastReportedError = useRef<Error | null>(null);
+      useEffect(() => {
+        if (error === undefined) {
+          lastReportedError.current = null;
+          return;
+        }
+        // Compare by message: the encode branch creates a fresh Error each
+        // render.
+        if (lastReportedError.current?.message !== error.message) {
+          lastReportedError.current = error;
+          onError?.(error);
+        }
+      }, [error, onError]);
+
+      if (error !== undefined || matrixResult.status !== 'success') {
         return null;
       }
 

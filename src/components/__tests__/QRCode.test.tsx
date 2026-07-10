@@ -2,6 +2,7 @@ import React from 'react';
 import type Svg from 'react-native-svg';
 import {render, renderHook, screen} from '@testing-library/react-native';
 import {DEFAULT_TEST_ID, QRCode} from '../QRCode';
+import type {QRCodeProps} from '../../types';
 import Logo from 'logo.svg';
 import * as UseQRMatrixHook from '../../hooks/useQRMatrix';
 import {useQRMatrix} from '../../hooks/useQRMatrix';
@@ -116,6 +117,66 @@ describe('QRCode', () => {
 
       expect(toJSON()).toBeNull();
       expect(screen.queryByTestId(`${DEFAULT_TEST_ID}.error`)).toBeNull();
+    });
+
+    it('reports the same error only once across re-renders', () => {
+      const onError = jest.fn();
+      jest.spyOn(UseQRMatrixHook, 'useQRMatrix').mockReturnValue({
+        status: 'failure',
+        error: error,
+      });
+
+      const {rerender} = render(
+        <QRCode
+          value={DEFAULT_VALUE}
+          onError={() => {
+            onError();
+          }}
+        />,
+      );
+      rerender(
+        <QRCode
+          value={DEFAULT_VALUE}
+          onError={() => {
+            onError();
+          }}
+        />,
+      );
+      rerender(
+        <QRCode
+          value={DEFAULT_VALUE}
+          onError={() => {
+            onError();
+          }}
+        />,
+      );
+
+      expect(onError).toHaveBeenCalledTimes(1);
+    });
+  });
+
+  describe('when encoding the value fails', () => {
+    const invalidValue = {
+      type: 'vcard',
+      fullName: 'Jane Doe',
+      birthday: 'not-a-date',
+    } as unknown as QRCodeProps['value'];
+
+    it('calls onError and renders nothing instead of throwing', () => {
+      const onError = jest.fn();
+
+      const {toJSON} = render(
+        <QRCode value={invalidValue} onError={onError} />,
+      );
+
+      expect(onError).toHaveBeenCalledWith(expect.any(Error));
+      expect(toJSON()).toBeNull();
+    });
+
+    it('renders nothing when onError is not provided', () => {
+      const {toJSON} = render(<QRCode value={invalidValue} />);
+
+      expect(toJSON()).toBeNull();
     });
   });
 });
