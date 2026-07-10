@@ -59,7 +59,7 @@ export interface LogoStyle {
   borderRadius?: number;
 }
 
-export interface TestProps {
+interface TestProps {
   testID?: string;
 }
 
