@@ -4,6 +4,7 @@ import {useQRMatrix} from '../hooks/useQRMatrix';
 import {useLogo} from '../hooks/useLogo';
 import {type QRCodeProps} from '../types';
 import {encodeQRCodeContents} from '../types/QRContents';
+import {svgLocalId} from '../utils/svgId';
 
 export const DEFAULT_TEST_ID = 'react-native-qrcode-composer';
 
@@ -46,13 +47,13 @@ export const QRCode = React.memo(
         linearGradient,
         gradientDirection = ['0%', '0%', '100%', '100%'],
       } = style ?? {};
-      const {logoComponent} = useLogo(
-        size,
-        `${testID}.logo`,
+      const {logoComponent} = useLogo({
+        qrCodeSize: size,
+        testID: `${testID}.logo`,
         instanceId,
         logo,
         logoStyle,
-      );
+      });
 
       const handleRef = useCallback(
         (instance: Svg | null) => {
@@ -74,7 +75,7 @@ export const QRCode = React.memo(
 
       const {path} = matrixResult.value;
       const actualSize = size + quietZone * 2;
-      const gradientId = `grad-${instanceId.toString()}`;
+      const gradientId = svgLocalId('grad', instanceId);
       return (
         <Svg
           ref={handleRef}

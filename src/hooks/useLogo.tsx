@@ -3,6 +3,7 @@ import type {SvgProps} from 'react-native-svg';
 import {G, Defs, ClipPath, Rect, Image} from 'react-native-svg';
 import type {LogoProp, LogoStyle} from '../types';
 import type {ImageSourcePropType} from 'react-native';
+import {svgLocalId} from '../utils/svgId';
 
 const isImageSourcePropType = (logo: LogoProp): logo is ImageSourcePropType =>
   typeof logo === 'number' || (typeof logo === 'object' && 'uri' in logo);
@@ -14,19 +15,30 @@ const isReactComponent = (
 const logoBackgroundClipPath = 'logo-background-clip-path';
 const logoClipPath = 'logo-clip-path';
 
-export const useLogo = (
-  qrCodeSize: number,
-  testId: string,
-  instanceId: number,
-  logo?: LogoProp,
-  logoStyle?: LogoStyle,
-) => {
+interface UseLogoOptions {
+  qrCodeSize: number;
+  testID: string;
+  instanceId: number;
+  logo?: LogoProp;
+  logoStyle?: LogoStyle;
+}
+
+export const useLogo = ({
+  qrCodeSize,
+  testID,
+  instanceId,
+  logo,
+  logoStyle,
+}: UseLogoOptions) => {
   const logoComponent = useMemo(() => {
     if (logo === undefined) {
       return null;
     }
-    const logoBackgroundClipPathId = `${logoBackgroundClipPath}-${instanceId.toString()}`;
-    const logoClipPathId = `${logoClipPath}-${instanceId.toString()}`;
+    const logoBackgroundClipPathId = svgLocalId(
+      logoBackgroundClipPath,
+      instanceId,
+    );
+    const logoClipPathId = svgLocalId(logoClipPath, instanceId);
     const {
       size = qrCodeSize * 0.2,
       backgroundColor = 'transparent',
@@ -43,7 +55,7 @@ export const useLogo = (
     const logoImage = isImageSourcePropType(logo) ? logo : undefined;
 
     return (
-      <G x={position} y={position} testID={testId}>
+      <G x={position} y={position} testID={testID}>
         <Defs>
           <ClipPath id={logoBackgroundClipPathId}>
             <Rect
@@ -92,6 +104,6 @@ export const useLogo = (
         </G>
       </G>
     );
-  }, [logo, logoStyle, qrCodeSize, testId, instanceId]);
+  }, [logo, logoStyle, qrCodeSize, testID, instanceId]);
   return {logoComponent};
 };

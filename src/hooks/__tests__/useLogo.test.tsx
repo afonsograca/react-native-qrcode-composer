@@ -6,7 +6,9 @@ import {G, Image, Rect} from 'react-native-svg';
 
 describe('useLogo', () => {
   it('should return null when logo is undefined', () => {
-    const {result} = renderHook(() => useLogo(100, '', 1, undefined));
+    const {result} = renderHook(() =>
+      useLogo({qrCodeSize: 100, testID: '', instanceId: 1, logo: undefined}),
+    );
     expect(result.current.logoComponent).toBeNull();
   });
 
@@ -14,7 +16,13 @@ describe('useLogo', () => {
     it('should render the logo with a custom background color', () => {
       const backgroundColor = 'red';
       const {result} = renderHook(() =>
-        useLogo(100, '', 1, Logo, {backgroundColor}),
+        useLogo({
+          qrCodeSize: 100,
+          testID: '',
+          instanceId: 1,
+          logo: Logo,
+          logoStyle: {backgroundColor},
+        }),
       );
       const logoBackground = findChildComponent(
         result.current.logoComponent,
@@ -29,7 +37,15 @@ describe('useLogo', () => {
 
     it('should render the logo with a custom margin', () => {
       const margin = 50;
-      const {result} = renderHook(() => useLogo(100, '', 1, Logo, {margin}));
+      const {result} = renderHook(() =>
+        useLogo({
+          qrCodeSize: 100,
+          testID: '',
+          instanceId: 1,
+          logo: Logo,
+          logoStyle: {margin},
+        }),
+      );
       const logoContainer = findChildComponent(
         result.current.logoComponent,
         G,
@@ -44,7 +60,13 @@ describe('useLogo', () => {
     it('should render the logo with a custom border radius', () => {
       const borderRadius = 10;
       const {result} = renderHook(() =>
-        useLogo(100, '', 1, Logo, {borderRadius}),
+        useLogo({
+          qrCodeSize: 100,
+          testID: '',
+          instanceId: 1,
+          logo: Logo,
+          logoStyle: {borderRadius},
+        }),
       );
       const logoBackground = findChildComponent(
         result.current.logoComponent,
@@ -59,13 +81,17 @@ describe('useLogo', () => {
 
   describe('Logo image', () => {
     it('should render the logo component when logo is an image source', () => {
-      const {result} = renderHook(() => useLogo(100, '', 1, logo));
+      const {result} = renderHook(() =>
+        useLogo({qrCodeSize: 100, testID: '', instanceId: 1, logo}),
+      );
 
       expect(result.current.logoComponent).toBeDefined();
     });
 
     it('should render the image source', () => {
-      const {result} = renderHook(() => useLogo(100, '', 1, logo));
+      const {result} = renderHook(() =>
+        useLogo({qrCodeSize: 100, testID: '', instanceId: 1, logo}),
+      );
       const imageLogo = findChildComponent(result.current.logoComponent, Image);
 
       expect(imageLogo?.props).toEqual(expect.objectContaining({href: logo}));
@@ -73,7 +99,15 @@ describe('useLogo', () => {
 
     it('should render the image with a custom size', () => {
       const size = 50;
-      const {result} = renderHook(() => useLogo(100, '', 1, logo, {size}));
+      const {result} = renderHook(() =>
+        useLogo({
+          qrCodeSize: 100,
+          testID: '',
+          instanceId: 1,
+          logo,
+          logoStyle: {size},
+        }),
+      );
       const imageLogo = findChildComponent(result.current.logoComponent, Image);
 
       expect(imageLogo?.props).toEqual(
@@ -84,12 +118,16 @@ describe('useLogo', () => {
 
   describe('Logo SVG', () => {
     it('should render the logo component when logo is a React component', () => {
-      const {result} = renderHook(() => useLogo(100, '', 1, Logo));
+      const {result} = renderHook(() =>
+        useLogo({qrCodeSize: 100, testID: '', instanceId: 1, logo: Logo}),
+      );
       expect(result.current.logoComponent).toBeDefined();
     });
 
     it('should render the SVG provided', () => {
-      const {result} = renderHook(() => useLogo(100, '', 1, Logo));
+      const {result} = renderHook(() =>
+        useLogo({qrCodeSize: 100, testID: '', instanceId: 1, logo: Logo}),
+      );
       const logo = findChildComponent(result.current.logoComponent, Logo);
 
       expect(logo?.type).toBe(Logo);
@@ -97,7 +135,15 @@ describe('useLogo', () => {
 
     it('should render the SVG with a custom size', () => {
       const size = 50;
-      const {result} = renderHook(() => useLogo(100, '', 1, Logo, {size}));
+      const {result} = renderHook(() =>
+        useLogo({
+          qrCodeSize: 100,
+          testID: '',
+          instanceId: 1,
+          logo: Logo,
+          logoStyle: {size},
+        }),
+      );
       const logo = findChildComponent(result.current.logoComponent, Logo);
 
       expect(logo?.props).toEqual(
