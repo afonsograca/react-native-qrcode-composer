@@ -12,6 +12,28 @@ Contributors are encouraged to create a new branch for each set of related chang
 
 By contributing to this project, you agree to abide by [its terms](CODE_OF_CONDUCT.md).
 
+### Environment setup
+
+The JavaScript/TypeScript toolchain is pinned with [mise](https://mise.jdx.dev). From the repo root:
+
+```sh
+mise install   # Node + Yarn, per mise.toml
+yarn           # install dependencies
+```
+
+That's everything you need for library work — building (`yarn prepare`), tests (`yarn test`), linting, and type-checking. A [dev container](.devcontainer/devcontainer.json) with this toolchain is also provided; open the repo in it and the JS environment is ready with no host setup.
+
+**Running the example app on a device/simulator** additionally requires native tooling, which — because iOS builds need Xcode — lives on the **host (macOS)**, not the container:
+
+- **iOS:** [Xcode](https://developer.apple.com/xcode/) + CocoaPods (`cd example/ios && pod install`).
+- **Android:** the Android SDK (Platform 34, Build-Tools 34, NDK) — most easily via [Android Studio](https://developer.android.com/studio) — plus **JDK 17**. The JDK is pinned in [`example/mise.toml`](example/mise.toml); run `mise install` inside `example/` to get a clean Temurin 17 (this also avoids the `peer not authenticated` TLS error some system JDKs hit against Maven Central).
+
+Then, from `example/`:
+
+```sh
+yarn android   # or: yarn ios
+```
+
 ### Release Process
 
 Our release process is manual, ensuring each version aligns with our high standards for stability and completeness. Discussions about when to cut a release and what it should include are encouraged among all participants.
