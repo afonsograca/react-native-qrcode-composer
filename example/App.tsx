@@ -77,7 +77,7 @@ function App(): React.JSX.Element {
           ]}
         >
           <Section title="Simple">
-            <QRCode />
+            <QRCode value={{type: 'plain-text', content: 'FOOBAR'}} />
           </Section>
           <Section title="With size">
             <QRCode size={200} />

@@ -2,6 +2,7 @@ import type {Ref} from 'react';
 import type {ColorValue, ImageSourcePropType} from 'react-native';
 import type {NumberProp, SvgProps} from 'react-native-svg';
 import type Svg from 'react-native-svg';
+import type {QRCodeContents} from './QRContents';
 
 export type LogoProp = ImageSourcePropType | React.FunctionComponent<SvgProps>;
 
@@ -48,7 +49,7 @@ export interface TestProps<T extends string = string> {
 }
 
 export interface QRCodeProps extends TestProps {
-  value?: string;
+  value?: QRCodeContents;
   size?: number;
   logo?: LogoProp;
   logoStyle?: LogoStyle;

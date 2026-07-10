@@ -4,12 +4,13 @@ import {useQRMatrix} from '../hooks/useQRMatrix';
 import {useLogo} from '../hooks/useLogo';
 import {type QRCodeProps} from '../types';
 import {Text} from 'react-native';
+import {encodeQRCodeContents} from '../types/QRContents';
 
 export const DEFAULT_TEST_ID = 'react-native-qrcode-composer';
 
 export const QRCode = React.memo(
   ({
-    value = 'QR code message',
+    value = {type: 'plain-text', content: 'QR code message'},
     size = 100,
     logo,
     logoStyle,
@@ -18,7 +19,11 @@ export const QRCode = React.memo(
     onError,
     testID = DEFAULT_TEST_ID,
   }: QRCodeProps) => {
-    const matrixResult = useQRMatrix({value, size, ...style});
+    const matrixResult = useQRMatrix({
+      value: encodeQRCodeContents(value),
+      size,
+      ...style,
+    });
     const {
       color = 'black',
       backgroundColor = 'white',
