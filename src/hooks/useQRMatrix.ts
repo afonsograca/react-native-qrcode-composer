@@ -1,18 +1,24 @@
-import {useMemo} from 'react';
+import {useMemo, useRef} from 'react';
 import QRCode from 'qrcode';
 
-import type {QRCodeStyle} from '../types';
+import type {DetectionMarkerOptions, PatternOptions} from '../types';
 import {ErrorCorrectionLevel} from '../types';
+import type {QRCodeContents} from '../types';
+import {encodeQRCodeContents} from '../encoding';
 import type {Result} from '../types/result';
+import {tryResult} from '../types/result';
 
 const DEFAULT_CORNER_RADIUS = 0.0;
 const MAX_CORNER_RADIUS = 0.5;
 
 const clamp01 = (v: number) => Math.max(0, Math.min(1, v));
 
-interface QRCodeOptions extends QRCodeStyle {
-  value: string;
+interface QRCodeOptions {
+  value: QRCodeContents;
   size: number;
+  errorCorrectionLevel?: ErrorCorrectionLevel;
+  detectionMarkerOptions?: DetectionMarkerOptions;
+  patternOptions?: PatternOptions;
 }
 
 interface ResolvedMarkerOptions {
@@ -31,10 +37,6 @@ interface CornerRadius {
   topRight: boolean;
   bottomLeft: boolean;
   bottomRight: boolean;
-}
-
-export interface PathResult {
-  path: string;
 }
 
 interface Position {
@@ -188,7 +190,7 @@ const generatePathFromMatrix = (
   size: number,
   detectionMarkerOptions: ResolvedMarkerOptions,
   patternOptions: ResolvedPatternOptions,
-): PathResult => {
+): string => {
   if (!matrix.length) throw new Error('Matrix cannot be empty');
   const cellSize = size / matrix.length;
   const patternCornerRadius =
@@ -224,7 +226,7 @@ const generatePathFromMatrix = (
     return acc;
   }, '');
 
-  return {path};
+  return path;
 };
 
 export const useQRMatrix = ({
@@ -233,9 +235,17 @@ export const useQRMatrix = ({
   errorCorrectionLevel = ErrorCorrectionLevel.M,
   detectionMarkerOptions,
   patternOptions,
-}: QRCodeOptions): Result<PathResult> => {
-  return useMemo(() => {
-    try {
+}: QRCodeOptions): Result<string> => {
+  // Encode every render: consumers pass inline object literals, so the
+  // contents identity is unstable; the encoded string is the stable memo key.
+  const encodeResult = tryResult(() => encodeQRCodeContents(value));
+  const encoded = encodeResult.status === 'success' ? encodeResult.value : null;
+
+  const matrixResult = useMemo<Result<string> | null>(() => {
+    if (encoded === null) {
+      return null;
+    }
+    return tryResult(() => {
       const marker: ResolvedMarkerOptions = {
         connected: detectionMarkerOptions?.connected ?? true,
         outerCornerRadius: clamp01(
@@ -256,22 +266,13 @@ export const useQRMatrix = ({
         ),
       };
 
-      const matrix = createQRMatrix(value, errorCorrectionLevel);
-      const pathResult = generatePathFromMatrix(matrix, size, marker, pattern);
-      return {status: 'success', value: pathResult};
-    } catch (error) {
-      let failure: Error;
-      if (error instanceof Error) {
-        failure = error;
-      } else {
-        failure = new Error(String(error));
-      }
-      return {status: 'failure', error: failure};
-    }
+      const matrix = createQRMatrix(encoded, errorCorrectionLevel);
+      return generatePathFromMatrix(matrix, size, marker, pattern);
+    });
     // Primitive deps: equal-valued inline option objects must not invalidate
     // the memo.
   }, [
-    value,
+    encoded,
     size,
     errorCorrectionLevel,
     detectionMarkerOptions?.connected,
@@ -281,4 +282,22 @@ export const useQRMatrix = ({
     patternOptions?.connected,
     patternOptions?.cornerRadius,
   ]);
+
+  // Encoding mints a fresh Error each render; cache by message so the failure
+  // identity stays stable across re-renders for the component's onError dedup.
+  const lastEncodeFailure = useRef<Error | null>(null);
+  if (encodeResult.status === 'failure') {
+    if (lastEncodeFailure.current?.message !== encodeResult.error.message) {
+      lastEncodeFailure.current = encodeResult.error;
+    }
+    return {status: 'failure', error: lastEncodeFailure.current};
+  }
+
+  // Encoding succeeded, so the memo produced a result; this narrows the type.
+  return (
+    matrixResult ?? {
+      status: 'failure',
+      error: new Error('Unable to generate QR matrix'),
+    }
+  );
 };

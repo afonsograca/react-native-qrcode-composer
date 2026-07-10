@@ -35,7 +35,7 @@ describe('useQRCodeGenerator', () => {
       throw new Error('QR Matrix generation failed');
     }
 
-    expect(qrMatrixResult.value.path).toMatchSnapshot();
+    expect(qrMatrixResult.value).toMatchSnapshot();
   });
 
   it('should handle error and call onError', () => {

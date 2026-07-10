@@ -67,7 +67,7 @@ describe('QRCode', () => {
     }
     expect(qrMatrixResult.status).toBe('success');
     expect(pathProps).toEqual(
-      expect.objectContaining({d: qrMatrixResult.value.path}),
+      expect.objectContaining({d: qrMatrixResult.value}),
     );
   });
 

@@ -1,28 +1,14 @@
 import React, {useCallback, useEffect, useRef, useState} from 'react';
-import Svg, {Defs, G, Path, Rect, LinearGradient, Stop} from 'react-native-svg';
+import Svg, {Defs, Path, Rect, LinearGradient, Stop} from 'react-native-svg';
 import {useQRMatrix} from '../hooks/useQRMatrix';
-import {useLogo} from '../hooks/useLogo';
+import {Logo} from './Logo';
 import {type QRCodeProps} from '../types';
-import {encodeQRCodeContents} from '../encoding';
-import type {QRCodeContents} from '../types/QRContents';
-import type {Result} from '../types/result';
 import {svgLocalId} from '../utils/svgId';
 
 export const DEFAULT_TEST_ID = 'react-native-qrcode-composer';
 
 // Instance counter instead of React.useId: peerDependencies allow React 17.
 let instanceCounter = 0;
-
-const encodeContents = (contents: QRCodeContents): Result<string> => {
-  try {
-    return {status: 'success', value: encodeQRCodeContents(contents)};
-  } catch (error) {
-    return {
-      status: 'failure',
-      error: error instanceof Error ? error : new Error(String(error)),
-    };
-  }
-};
 
 const assignRef = <T,>(ref: React.Ref<T> | undefined, value: T | null) => {
   if (typeof ref === 'function') {
@@ -48,13 +34,12 @@ export const QRCode = React.memo(
       ref,
     ) => {
       const [instanceId] = useState(() => ++instanceCounter);
-      // Not memoized on `value`: consumers pass inline literals; the encoded
-      // string is the stable matrix-memo key.
-      const encodeResult = encodeContents(value);
       const matrixResult = useQRMatrix({
-        value: encodeResult.status === 'success' ? encodeResult.value : '',
+        value,
         size,
-        ...style,
+        errorCorrectionLevel: style?.errorCorrectionLevel,
+        detectionMarkerOptions: style?.detectionMarkerOptions,
+        patternOptions: style?.patternOptions,
       });
       const {
         color = 'black',
@@ -63,13 +48,6 @@ export const QRCode = React.memo(
         linearGradient,
         gradientDirection = ['0%', '0%', '100%', '100%'],
       } = style ?? {};
-      const {logoComponent} = useLogo({
-        qrCodeSize: size,
-        testID: `${testID}.logo`,
-        instanceId,
-        logo,
-        logoStyle,
-      });
 
       const handleRef = useCallback(
         (instance: Svg | null) => {
@@ -80,11 +58,7 @@ export const QRCode = React.memo(
       );
 
       const error =
-        encodeResult.status === 'failure'
-          ? encodeResult.error
-          : matrixResult.status === 'failure'
-            ? matrixResult.error
-            : undefined;
+        matrixResult.status === 'failure' ? matrixResult.error : undefined;
 
       const lastReportedError = useRef<Error | null>(null);
       useEffect(() => {
@@ -92,19 +66,17 @@ export const QRCode = React.memo(
           lastReportedError.current = null;
           return;
         }
-        // Compare by message: the encode branch creates a fresh Error each
-        // render.
-        if (lastReportedError.current?.message !== error.message) {
+        if (lastReportedError.current !== error) {
           lastReportedError.current = error;
           onError?.(error);
         }
       }, [error, onError]);
 
-      if (error !== undefined || matrixResult.status !== 'success') {
+      if (matrixResult.status !== 'success') {
         return null;
       }
 
-      const {path} = matrixResult.value;
+      const path = matrixResult.value;
       const actualSize = size + quietZone * 2;
       const gradientId = svgLocalId('grad', instanceId);
       return (
@@ -137,28 +109,30 @@ export const QRCode = React.memo(
               </LinearGradient>
             </Defs>
           ) : null}
-          <G>
-            <Rect
-              x={-quietZone}
-              y={-quietZone}
-              width={actualSize}
-              height={actualSize}
-              fill={backgroundColor}
-              rx={style?.cornerRadius}
-              ry={style?.cornerRadius}
+          <Rect
+            x={-quietZone}
+            y={-quietZone}
+            width={actualSize}
+            height={actualSize}
+            fill={backgroundColor}
+            rx={style?.cornerRadius}
+            ry={style?.cornerRadius}
+          />
+          <Path
+            d={path}
+            fill={linearGradient !== undefined ? `url(#${gradientId})` : color}
+            fillRule="evenodd"
+            testID={`${testID}.path`}
+          />
+          {logo !== undefined && (
+            <Logo
+              qrCodeSize={size}
+              testID={`${testID}.logo`}
+              instanceId={instanceId}
+              logo={logo}
+              logoStyle={logoStyle}
             />
-          </G>
-          <G>
-            <Path
-              d={path}
-              fill={
-                linearGradient !== undefined ? `url(#${gradientId})` : color
-              }
-              fillRule="evenodd"
-              testID={`${testID}.path`}
-            />
-          </G>
-          {logoComponent !== null && logoComponent}
+          )}
         </Svg>
       );
     },
