@@ -18,7 +18,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - **Breaking:** the `value` prop is now required and typed `QRCodeContents`; the `'QR code message'` default has been removed
 - **Breaking:** on encoding/render failure the component now renders nothing (`null`) instead of a raw `Text` element with the error message; `onError` is still invoked when provided
 - **Breaking:** `VCard.birthday` and `VCard.anniversary` are now `Date` instead of `string`, consistent with `MeCard`
-- **Breaking:** `QRCodeStyle.backgroundColor` is now typed `ColorValue` instead of `string`
+- `QRCodeStyle.backgroundColor` is now typed `ColorValue`, widening it to also accept `OpaqueColorValue` (e.g. `PlatformColor`); plain strings work as before
+- **Breaking:** `LogoStyle.borderRadius` is now applied in pixels to both the logo and its background (the background previously misread it as a fraction of its size, producing oversized radii for values above 2). For a circular logo, set it to half the logo `size`
+- **Breaking:** the internal `TestProps` type is no longer exported
 
 ### Deprecated
 
@@ -33,10 +35,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - vCard and iCalendar payloads now use CRLF line endings
 - Calendar events are now wrapped in `BEGIN:VCALENDAR`/`END:VCALENDAR`
 - vCard now encodes all of its typed fields (previously around 20 fields, such as `telephone`, `organization`, and `title`, were silently dropped)
+- `VCard.name` given as a plain string is now escaped like every other text field (commas and semicolons no longer corrupt the payload)
+- Removed the broken `import` condition from the package `exports` map: it pointed Node ESM consumers at ESM-syntax files in a CommonJS package, causing parse failures
 
 ## [0.2.0] - 2024-06-21
 
 ### Added
+
 - The ability to add a corner radius to the QR code's quiet zone
 
 ## [0.1.4] - 2024-06-21
@@ -52,6 +57,5 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 Project Initialization
 
 [unreleased]: https://github.com/afonsograca/react-native-qrcode-composer/compare/0.2.0...HEAD
-
 [0.2.0]: https://github.com/afonsograca/react-native-qrcode-composer/compare/0.1.4...0.2.0
 [0.1.4]: https://github.com/afonsograca/react-native-qrcode-composer/compare/0.1.3...0.1.4

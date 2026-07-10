@@ -45,7 +45,7 @@ yarn add react-native-qrcode-composer
 Here's a basic example of how to use the library:
 
 ```typescript
-import QRCode from 'react-native-qrcode-composer';
+import {QRCode} from 'react-native-qrcode-composer';
 import Logo from 'assets/logo.svg';
 import logo from 'assets/logo.png';
 
@@ -79,9 +79,11 @@ The following sections provide more details about these props and how to use the
 | `onError` | `(error: Error) => void` | Yes | `undefined` | Callback function triggered if an error occurs during encoding or rendering. When an error occurs, the component renders nothing (`null`) |
 | `testID` | `string` | Yes | `'react-native-qrcode-composer'` | Identification prefix for the internal parts of the component |
 
+The `logo` prop accepts a `LogoProp`, which is `ImageSourcePropType | React.FunctionComponent<SvgProps>` — either a React Native image source (for PNG/remote logos) or an SVG component (for vector logos). `LogoProp` is exported from the package.
+
 ### Content types
 
-The `value` prop accepts a `QRCodeContents` value: either a plain `string` (encoded as-is) or one of the typed content objects below, discriminated by their `type` field. Typed objects are encoded into the appropriate payload format (mailto, WIFI, vCard, iCalendar, etc.) for you. `QRCodeContents` and all of the content interfaces (`PlainText`, `URLContent`, `Email`, `Phone`, `SMS`, `WiFi`, `GeolocationContent`, `VCard`, `MeCard`, `CalendarEvent`) are exported from the package.
+The `value` prop accepts a `QRCodeContents` value: either a plain `string` (encoded as-is) or one of the typed content objects below, discriminated by their `type` field. Typed objects are encoded into the appropriate payload format (mailto, WIFI, vCard, iCalendar, etc.) for you. `QRCodeContents` and all of the content interfaces (`PlainText`, `URLContent`, `Email`, `Phone`, `SMS`, `WiFi`, `GeolocationContent`, `VCard`, `MeCard`, `CalendarEvent`) are exported from the package, along with `SecurityType`. The package also exports the component prop and style types (`QRCodeProps`, `QRCodeStyle`, `LogoStyle`, `LogoProp`, `PatternOptions`, `DetectionMarkerOptions`) and the `ErrorCorrectionLevel` enum.
 
 ```typescript
 // Plain string
@@ -274,7 +276,7 @@ The `value` prop accepts a `QRCodeContents` value: either a plain `string` (enco
 | `size` | number | Yes | 20% of the QR code size | The size of the logo in pixels |
 | `backgroundColor` | string | Yes | `transparent` | The background color of the logo |
 | `margin` | number | Yes | `0` | The margin around the logo in pixels |
-| `borderRadius` | number | Yes | `0` | The border radius of the logo's corners |
+| `borderRadius` | number | Yes | `0` | The border radius of the logo's corners, in pixels. The logo's background rectangle uses this radius plus the `margin` so its corners track the logo's. Set it to half the logo `size` for a circular logo and background |
 
 ### QRCodeStyle
 
@@ -284,7 +286,7 @@ The `value` prop accepts a `QRCodeContents` value: either a plain `string` (enco
 | `backgroundColor` | `ColorValue` | Yes | `white` | The background color of the entire QR code |
 | `quietZone` | number | Yes | `0` | The margin around the QR code, in pixels |
 | `cornerRadius` | number | Yes | `0` | The corner radius, in absolute pixels, applied to the QR code's quiet zone |
-| `errorCorrectionLevel` | `ErrorCorrectionLevel` | Yes | `M` | The error correction level, enhancing robustness |
+| `errorCorrectionLevel` | [`ErrorCorrectionLevel`](#errorcorrectionlevel) | Yes | `M` | The error correction level, enhancing robustness |
 | `linearGradient` | `[ColorValue, ColorValue]` | Yes | `undefined` | The colors for a linear gradient effect |
 | `gradientDirection` | `[NumberProp, NumberProp, NumberProp, NumberProp]` | Yes | `['0%', '0%', '100%', '100%']` | The directions for gradient application |
 | `detectionMarkerOptions` | [DetectionMarkerOptions](#detectionmarkeroptions) | Yes | `undefined` | Options for styling the detection markers |
@@ -292,23 +294,34 @@ The `value` prop accepts a `QRCodeContents` value: either a plain `string` (enco
 
 > **Note on sizing:** when `quietZone` is greater than `0`, the rendered element measures `size + 2 * quietZone` pixels on each side — the `size` prop defines the QR code area, not the total footprint.
 
+### ErrorCorrectionLevel
+
+`ErrorCorrectionLevel` is an enum exported from the package. Higher levels tolerate more damage/obstruction (for example a centered logo) at the cost of denser codes:
+
+| Value | Recovery capacity |
+|---|---|
+| `ErrorCorrectionLevel.L` | ~7% |
+| `ErrorCorrectionLevel.M` | ~15% |
+| `ErrorCorrectionLevel.Q` | ~25% |
+| `ErrorCorrectionLevel.H` | ~30% |
+
 ### DetectionMarkerOptions
 
 | Property | Type | Optional | Default | Description |
 | --- | --- | --- | --- | --- |
 | `connected` | boolean | Yes | `true` | Indicates if the blocks that make up the marker are connected |
-| `cornerRadius` | number | Yes | `0` | Corner radius applied to the detection markers, as a fraction (0–1) of the marker size. Note: This does not take precedence over `outerCornerRadius` or `innerCornerRadius` |
-| `outerCornerRadius` | number | Yes | `0` | Specific corner radius for the outer part of the markers, as a fraction (0–1) of the marker size |
-| `innerCornerRadius` | number | Yes | `0` | Specific corner radius for the inner part of the markers, as a fraction (0–1) of the marker size |
+| `cornerRadius` | number | Yes | `0` | Corner roundness of the detection markers, from `0` (square) to `1` (fully round). Note: This does not take precedence over `outerCornerRadius` or `innerCornerRadius` |
+| `outerCornerRadius` | number | Yes | `0` | Specific corner roundness for the outer part of the markers, from `0` (square) to `1` (fully round) |
+| `innerCornerRadius` | number | Yes | `0` | Specific corner roundness for the inner part of the markers, from `0` (square) to `1` (fully round) |
 
 ### PatternOptions
 
 | Property | Type | Optional | Default | Description |
 | --- | --- | --- | --- | --- |
 | `connected` | boolean | Yes | `false` | Indicates if the blocks in the QR code pattern are connected |
-| `cornerRadius` | number | Yes | `0` | Corner radius for each block in the QR code pattern, as a fraction (0–1) of the module size |
+| `cornerRadius` | number | Yes | `0` | Corner roundness of each block in the QR code pattern, from `0` (square) to `1` (fully round) |
 
-> **Note on corner radius units:** `style.cornerRadius` (the background rectangle) is expressed in absolute pixels, whereas `patternOptions.cornerRadius` and the `detectionMarkerOptions` corner radii are fractions between 0 and 1 of the module/marker size.
+> **Note on corner radius units:** `style.cornerRadius` (the background rectangle) and `logoStyle.borderRadius` are expressed in absolute pixels, whereas `patternOptions.cornerRadius` and the `detectionMarkerOptions` corner radii are roundness fractions between 0 (square corners) and 1 (fully round, i.e. a radius of half the module/marker size).
 
 ## Try it out
 
