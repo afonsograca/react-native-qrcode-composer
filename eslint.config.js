@@ -3,12 +3,9 @@
 import eslint from '@eslint/js';
 import tseslint from 'typescript-eslint';
 import eslintPluginPrettierRecommended from 'eslint-plugin-prettier/recommended';
-// import eslintConfig from '@react-native/eslint-config';
 import reactHooks from 'eslint-plugin-react-hooks';
 import reactNative from 'eslint-plugin-react-native';
 import globals from 'globals';
-
-// const internalModulesGlob = process.env.INTERNAL_MODULES_GLOB || 'src/**';
 
 export default tseslint.config(
   // global ignores
@@ -25,9 +22,6 @@ export default tseslint.config(
   eslint.configs.recommended,
   ...tseslint.configs.strictTypeChecked,
   ...tseslint.configs.stylisticTypeChecked,
-  //   '@react-native-community',
-  // reactNative.configs.all,
-  // eslintConfig,
   eslintPluginPrettierRecommended,
   {
     languageOptions: {
@@ -55,20 +49,6 @@ export default tseslint.config(
       '@typescript-eslint/consistent-type-imports': 'error',
       '@typescript-eslint/semi': ['error', 'always'],
       '@typescript-eslint/strict-boolean-expressions': 'error',
-      // 'import/order': [
-      //   'error',
-      //   {
-      //     pathGroups: [
-      //       {
-      //         pattern: `{${internalModulesGlob}}`,
-      //         group: 'external',
-      //         position: 'after',
-      //       },
-      //     ],
-      //     pathGroupsExcludedImportTypes: [],
-      //     'newlines-between': 'always',
-      //   },
-      // ],
       'max-len': [
         'error',
         {
@@ -80,7 +60,7 @@ export default tseslint.config(
         },
       ],
       'react-hooks/rules-of-hooks': 'error',
-      // 'react-hooks/exhaustive-deps': 'warn',
+      'react-hooks/exhaustive-deps': 'error',
     },
   },
   {
