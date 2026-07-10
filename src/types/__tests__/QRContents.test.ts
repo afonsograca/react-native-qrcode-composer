@@ -213,20 +213,33 @@ describe('QRContents', () => {
       expect(encodeQRCodeContents(wifi)).toEqual('WIFI:T:nopass;S:MyWiFi;;');
     });
 
-    it('should encode WiFi with special characters in SSID correctly', () => {
+    it('should escape special characters in SSID correctly', () => {
       const wifi = {
         type: 'wifi' as const,
         security: 'WPA' as const,
-        ssid: 'My!@#$%^&*()Wi-Fi',
+        ssid: 'My;Wi:Fi,"Net\\work"',
         password: 'password123',
         hidden: false,
       };
       expect(encodeQRCodeContents(wifi)).toEqual(
-        'WIFI:T:WPA;S:My!%40%23%24%25%5E%26*()Wi-Fi;P:password123;H:false;;',
+        'WIFI:T:WPA;S:My\\;Wi\\:Fi\\,\\"Net\\\\work\\";P:password123;H:false;;',
       );
     });
 
-    it('should encode WiFi with encoded characters in password correctly', () => {
+    it('should escape special characters in password correctly', () => {
+      const wifi = {
+        type: 'wifi' as const,
+        security: 'WPA' as const,
+        ssid: 'MyWiFi',
+        password: 'a\\b;c,d:e"f',
+        hidden: false,
+      };
+      expect(encodeQRCodeContents(wifi)).toEqual(
+        'WIFI:T:WPA;S:MyWiFi;P:a\\\\b\\;c\\,d\\:e\\"f;H:false;;',
+      );
+    });
+
+    it('should keep percent-encoded characters in password literal', () => {
       const wifi = {
         type: 'wifi' as const,
         security: 'WPA' as const,
@@ -235,7 +248,7 @@ describe('QRContents', () => {
         hidden: false,
       };
       expect(encodeQRCodeContents(wifi)).toEqual(
-        'WIFI:T:WPA;S:MyWiFi;P:password%2520123;H:false;;',
+        'WIFI:T:WPA;S:MyWiFi;P:password%20123;H:false;;',
       );
     });
 
@@ -288,7 +301,7 @@ describe('QRContents', () => {
         hidden: false,
       };
       expect(encodeQRCodeContents(wifi)).toEqual(
-        'WIFI:T:WPA;S:MyWiFi;P:abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890%3B!%40%23%24%25%5E%26*();H:false;;',
+        'WIFI:T:WPA;S:MyWiFi;P:abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890\\;!@#$%^&*();H:false;;',
       );
     });
   });

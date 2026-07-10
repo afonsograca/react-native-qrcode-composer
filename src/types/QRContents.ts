@@ -58,12 +58,16 @@ const encodePhoneNumber = (phoneNumber: string): string =>
 const encodeSMSContents = (contents: SMS): string =>
   `SMSTO:${encodePhoneNumber(contents.phoneNumber)}:${contents.message != null ? encodeURIComponent(contents.message) : ''}`;
 
+// WIFI: values backslash-escape their delimiter characters
+const escapeDelimiters = (value: string): string =>
+  value.replace(/([\\;,:"])/g, '\\$1');
+
 const encodeWiFiContents = (contents: WiFi): string =>
-  `WIFI:T:${contents.security};S:${encodeURIComponent(contents.ssid)}` +
+  `WIFI:T:${contents.security};S:${escapeDelimiters(contents.ssid)}` +
   (contents.password != null
-    ? `;P:${encodeURIComponent(contents.password)}`
+    ? `;P:${escapeDelimiters(contents.password)}`
     : '') +
-  (contents.hidden != null ? `;H:${encodeURIComponent(contents.hidden)}` : '') +
+  (contents.hidden != null ? `;H:${contents.hidden.toString()}` : '') +
   ';;';
 
 const encodeGeolocationContents = (contents: Geolocation): string =>
