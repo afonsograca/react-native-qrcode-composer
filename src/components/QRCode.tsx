@@ -4,8 +4,6 @@ import {useQRMatrix} from '../hooks/useQRMatrix';
 import {useLogo} from '../hooks/useLogo';
 import {type QRCodeProps} from '../types';
 import {encodeQRCodeContents} from '../types/QRContents';
-import {Text} from 'react-native';
-import {encodeQRCodeContents} from '../types/QRContents';
 
 export const DEFAULT_TEST_ID = 'react-native-qrcode-composer';
 
@@ -58,68 +56,66 @@ export const QRCode = React.memo(
         if (matrixResult.status === 'failure') {
           onError?.(matrixResult.error);
         }
-      }, [matrixResult]);
+      }, [matrixResult, onError]);
 
-      if (matrixResult.status === 'success') {
-        const {path} = matrixResult.value;
-        const actualSize = size + quietZone * 2;
-        return (
-          <Svg
-            ref={handleRef}
-            viewBox={[-quietZone, -quietZone, actualSize, actualSize].join(' ')}
-            width={actualSize}
-            height={actualSize}
-            testID={`${testID}.qrcode`}
-          >
-            {linearGradient !== undefined ? (
-              <Defs>
-                <LinearGradient
-                  id="grad"
-                  x1={gradientDirection[0]}
-                  y1={gradientDirection[1]}
-                  x2={gradientDirection[2]}
-                  y2={gradientDirection[3]}
-                >
-                  <Stop
-                    offset="0"
-                    stopColor={linearGradient[0]}
-                    stopOpacity="1"
-                  />
-                  <Stop
-                    offset="1"
-                    stopColor={linearGradient[1]}
-                    stopOpacity="1"
-                  />
-                </LinearGradient>
-              </Defs>
-            ) : null}
-            <G>
-              <Rect
-                x={-quietZone}
-                y={-quietZone}
-                width={actualSize}
-                height={actualSize}
-                fill={backgroundColor}
-                rx={style?.cornerRadius}
-                ry={style?.cornerRadius}
-              />
-            </G>
-            <G>
-              <Path
-                d={path}
-                fill={linearGradient !== undefined ? 'url(#grad)' : color}
-                fillRule="evenodd"
-                testID={`${testID}.path`}
-              />
-            </G>
-            {logoComponent !== null && logoComponent}
-          </Svg>
-        );
+      if (matrixResult.status !== 'success') {
+        return null;
       }
 
-      return onError === undefined ? (
-        <Text testID={`${testID}.error`}>{matrixResult.error.message}</Text>
-      ) : null;
+      const {path} = matrixResult.value;
+      const actualSize = size + quietZone * 2;
+      return (
+        <Svg
+          ref={handleRef}
+          viewBox={[-quietZone, -quietZone, actualSize, actualSize].join(' ')}
+          width={actualSize}
+          height={actualSize}
+          testID={`${testID}.qrcode`}
+        >
+          {linearGradient !== undefined ? (
+            <Defs>
+              <LinearGradient
+                id="grad"
+                x1={gradientDirection[0]}
+                y1={gradientDirection[1]}
+                x2={gradientDirection[2]}
+                y2={gradientDirection[3]}
+              >
+                <Stop
+                  offset="0"
+                  stopColor={linearGradient[0]}
+                  stopOpacity="1"
+                />
+                <Stop
+                  offset="1"
+                  stopColor={linearGradient[1]}
+                  stopOpacity="1"
+                />
+              </LinearGradient>
+            </Defs>
+          ) : null}
+          <G>
+            <Rect
+              x={-quietZone}
+              y={-quietZone}
+              width={actualSize}
+              height={actualSize}
+              fill={backgroundColor}
+              rx={style?.cornerRadius}
+              ry={style?.cornerRadius}
+            />
+          </G>
+          <G>
+            <Path
+              d={path}
+              fill={linearGradient !== undefined ? 'url(#grad)' : color}
+              fillRule="evenodd"
+              testID={`${testID}.path`}
+            />
+          </G>
+          {logoComponent !== null && logoComponent}
+        </Svg>
+      );
     },
   ),
 );

@@ -91,29 +91,31 @@ describe('QRCode', () => {
   describe('when there is an error', () => {
     const error = new Error('QRCodeError');
 
-    it('if onError is set, no text message should be displayed', () => {
+    it('calls onError and renders nothing', () => {
       const onError = jest.fn();
       jest.spyOn(UseQRMatrixHook, 'useQRMatrix').mockReturnValue({
         status: 'failure',
         error: error,
       });
 
-      render(<QRCode value={DEFAULT_VALUE} onError={onError} />);
+      const {toJSON} = render(
+        <QRCode value={DEFAULT_VALUE} onError={onError} />,
+      );
 
       expect(onError).toHaveBeenCalledWith(error);
+      expect(toJSON()).toBeNull();
     });
 
-    it('if there is no onError, the error message is displayed', () => {
+    it('renders nothing when onError is not provided', () => {
       jest.spyOn(UseQRMatrixHook, 'useQRMatrix').mockReturnValue({
         status: 'failure',
         error: error,
       });
 
-      render(<QRCode value={DEFAULT_VALUE} />);
+      const {toJSON} = render(<QRCode value={DEFAULT_VALUE} />);
 
-      expect(screen.getByTestId(`${DEFAULT_TEST_ID}.error`)).toHaveTextContent(
-        error.message,
-      );
+      expect(toJSON()).toBeNull();
+      expect(screen.queryByTestId(`${DEFAULT_TEST_ID}.error`)).toBeNull();
     });
   });
 });
