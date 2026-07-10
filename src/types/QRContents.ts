@@ -57,6 +57,17 @@ const encodeField = <T>(
 const encodeFieldLines = (fields: [string, FieldValue][]): string[] =>
   fields.flatMap(([key, value]) => (value != null ? [`${key}:${value}`] : []));
 
+const text = (value?: string): FieldValue =>
+  encodeField(value, escapeTextValue);
+// URI value type — not TEXT-escaped per RFC 6350 §3.4 / RFC 5545 §3.3.13
+const uri = (value?: string): FieldValue => value;
+const date = (value?: Date): FieldValue =>
+  encodeField(value, formatDateToYYYYMMDD);
+const dateTime = (value?: Date): FieldValue =>
+  encodeField(value, formatDateTimeToICalendarFormat);
+const delimited = (value?: string): FieldValue =>
+  encodeField(value, escapeDelimiters);
+
 const encodeEmailContents = (contents: Email): string => {
   const subject =
     contents.subject != null
@@ -93,49 +104,49 @@ const encodeGeolocationContents = (contents: Geolocation): string =>
 const encodeVCardContents = (contents: VCard): string => {
   const fields: [string, FieldValue][] = [
     ['VERSION', contents.version ?? '4.0'],
-    ['FN', escapeTextValue(contents.fullName)],
-    ['ADR', encodeField(contents.address, escapeTextValue)],
-    ['ANNIVERSARY', encodeField(contents.anniversary, formatDateToYYYYMMDD)],
-    ['BDAY', encodeField(contents.birthday, formatDateToYYYYMMDD)],
-    ['CALADRURI', contents.calendarAddressURI],
-    ['CALURI', contents.calendarURI],
+    ['FN', text(contents.fullName)],
+    ['ADR', text(contents.address)],
+    ['ANNIVERSARY', date(contents.anniversary)],
+    ['BDAY', date(contents.birthday)],
+    ['CALADRURI', uri(contents.calendarAddressURI)],
+    ['CALURI', uri(contents.calendarURI)],
     [
       'CATEGORIES',
       encodeField(contents.categories, categories =>
         categories.map(escapeTextValue).join(','),
       ),
     ],
-    ['CLIENTPIDMAP', contents.clientPIDMap],
-    ['EMAIL', encodeField(contents.email, escapeTextValue)],
-    ['FBURL', contents.facebookURL],
-    ['GENDER', contents.gender],
-    ['GEO', contents.geo],
-    ['IMPP', contents.instantMessenger],
-    ['KEY', contents.key],
-    ['KIND', encodeField(contents.kind, escapeTextValue)],
-    ['LANG', encodeField(contents.language, escapeTextValue)],
-    ['LOGO', contents.logo],
-    ['MEMBER', contents.member],
+    ['CLIENTPIDMAP', uri(contents.clientPIDMap)],
+    ['EMAIL', text(contents.email)],
+    ['FBURL', uri(contents.facebookURL)],
+    ['GENDER', uri(contents.gender)],
+    ['GEO', uri(contents.geo)],
+    ['IMPP', uri(contents.instantMessenger)],
+    ['KEY', uri(contents.key)],
+    ['KIND', text(contents.kind)],
+    ['LANG', text(contents.language)],
+    ['LOGO', uri(contents.logo)],
+    ['MEMBER', uri(contents.member)],
     [
       'N',
       encodeField(contents.name, name =>
         Array.isArray(name) ? name.map(escapeTextValue).join(';') : name,
       ),
     ],
-    ['NICKNAME', encodeField(contents.nickname, escapeTextValue)],
-    ['NOTE', encodeField(contents.note, escapeTextValue)],
-    ['ORG', encodeField(contents.organization, escapeTextValue)],
-    ['PRODID', encodeField(contents.productID, escapeTextValue)],
-    ['RELATED', encodeField(contents.related, escapeTextValue)],
-    ['ROLE', encodeField(contents.role, escapeTextValue)],
-    ['SOUND', contents.sound],
-    ['SOURCE', contents.source],
-    ['TEL', encodeField(contents.telephone, escapeTextValue)],
-    ['TITLE', encodeField(contents.title, escapeTextValue)],
-    ['TZ', encodeField(contents.timezone, escapeTextValue)],
-    ['UID', encodeField(contents.uid, escapeTextValue)],
-    ['URL', contents.url],
-    ['XML', contents.xml],
+    ['NICKNAME', text(contents.nickname)],
+    ['NOTE', text(contents.note)],
+    ['ORG', text(contents.organization)],
+    ['PRODID', text(contents.productID)],
+    ['RELATED', text(contents.related)],
+    ['ROLE', text(contents.role)],
+    ['SOUND', uri(contents.sound)],
+    ['SOURCE', uri(contents.source)],
+    ['TEL', text(contents.telephone)],
+    ['TITLE', text(contents.title)],
+    ['TZ', text(contents.timezone)],
+    ['UID', text(contents.uid)],
+    ['URL', uri(contents.url)],
+    ['XML', uri(contents.xml)],
   ];
 
   return ['BEGIN:VCARD', ...encodeFieldLines(fields), 'END:VCARD'].join('\r\n');
@@ -147,60 +158,53 @@ const encodeMeCardContents = (contents: MeCard): string => {
       'N',
       `${escapeDelimiters(contents.lastName)},${escapeDelimiters(contents.firstName)}`,
     ],
-    ['NICKNAME', encodeField(contents.nickname, escapeDelimiters)],
-    ['TEL', encodeField(contents.telephone, escapeDelimiters)],
-    ['EMAIL', encodeField(contents.email, escapeDelimiters)],
-    ['BDAY', encodeField(contents.birthday, formatDateToYYYYMMDD)],
-    ['ADR', encodeField(contents.address, escapeDelimiters)],
-    ['SOUND', encodeField(contents.sound, escapeDelimiters)],
-    ['URL', encodeField(contents.website, escapeDelimiters)],
-    ['NOTE', encodeField(contents.note, escapeDelimiters)],
-    ['VIDEO', encodeField(contents.videoCall, escapeDelimiters)],
+    ['NICKNAME', delimited(contents.nickname)],
+    ['TEL', delimited(contents.telephone)],
+    ['EMAIL', delimited(contents.email)],
+    ['BDAY', date(contents.birthday)],
+    ['ADR', delimited(contents.address)],
+    ['SOUND', delimited(contents.sound)],
+    ['URL', delimited(contents.website)],
+    ['NOTE', delimited(contents.note)],
+    ['VIDEO', delimited(contents.videoCall)],
   ];
 
-  return `MECARD:${encodeFieldLines(fields)
-    .map(line => `${line};`)
-    .join('')};`;
+  return `MECARD:${encodeFieldLines(fields).join(';')};;`;
 };
 
 const encodeCalendarEventContents = (contents: CalendarEvent): string => {
   const fields: [string, FieldValue][] = [
-    ['UID', escapeTextValue(contents.uid)],
-    ['DTSTART', formatDateTimeToICalendarFormat(contents.dtStart)],
-    ['DTEND', encodeField(contents.dtEnd, formatDateTimeToICalendarFormat)],
-    [
-      'DURATION',
-      contents.dtEnd == null
-        ? encodeField(contents.duration, escapeTextValue)
-        : undefined,
-    ],
-    ['SUMMARY', encodeField(contents.summary, escapeTextValue)],
-    ['DESCRIPTION', encodeField(contents.description, escapeTextValue)],
-    ['LOCATION', encodeField(contents.location, escapeTextValue)],
-    ['URL', contents.url],
-    ['GEO', contents.geo],
+    ['UID', text(contents.uid)],
+    ['DTSTART', dateTime(contents.dtStart)],
+    ['DTEND', dateTime(contents.dtEnd)],
+    ['DURATION', contents.dtEnd == null ? text(contents.duration) : undefined],
+    ['SUMMARY', text(contents.summary)],
+    ['DESCRIPTION', text(contents.description)],
+    ['LOCATION', text(contents.location)],
+    ['URL', uri(contents.url)],
+    ['GEO', uri(contents.geo)],
     [
       'CATEGORIES',
       encodeField(contents.categories, categories =>
         categories.map(escapeTextValue).join(','),
       ),
     ],
-    ['STATUS', contents.status],
-    ['TRANSP', contents.transp],
-    ['ORGANIZER', encodeField(contents.organizer, escapeTextValue)],
-    ['ATTACH', contents.attach],
+    ['STATUS', uri(contents.status)],
+    ['TRANSP', uri(contents.transp)],
+    ['ORGANIZER', text(contents.organizer)],
+    ['ATTACH', uri(contents.attach)],
     [
       'PRIORITY',
       encodeField(contents.priority, priority =>
         Math.min(Math.max(priority, 0), 9).toString(),
       ),
     ],
-    ['RRULE', contents.rrule],
+    ['RRULE', uri(contents.rrule)],
     [
       'SEQUENCE',
       encodeField(contents.sequence, sequence => sequence.toString()),
     ],
-    ['CLASS', contents.class],
+    ['CLASS', uri(contents.class)],
   ];
 
   return [
@@ -337,7 +341,6 @@ export interface CalendarEvent {
 
 const formatDateToYYYYMMDD = (date: Date) => {
   const year = date.getFullYear().toString();
-  // Pad month and day with leading zero if necessary
   const month = (date.getMonth() + 1).toString().padStart(2, '0');
   const day = date.getDate().toString().padStart(2, '0');
 
