@@ -1,6 +1,19 @@
 export {QRCode} from './components/QRCode';
 export {ErrorCorrectionLevel} from './types';
-export type {QRCodeContents} from './types/QRContents';
+export type {
+  QRCodeContents,
+  PlainText,
+  URL,
+  Email,
+  Phone,
+  SMS,
+  SecurityType,
+  WiFi,
+  Geolocation,
+  VCard,
+  MeCard,
+  CalendarEvent,
+} from './types/QRContents';
 export type {
   LogoProp,
   PatternOptions,
