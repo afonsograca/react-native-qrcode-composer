@@ -1,20 +1,29 @@
 import {useMemo} from 'react';
 import QRCode from 'qrcode';
 
-import type {
-  DetectionMarkerOptions,
-  PatternOptions,
-  QRCodeStyle,
-} from '../types';
+import type {QRCodeStyle} from '../types';
 import {ErrorCorrectionLevel} from '../types';
 import type {Result} from '../types/result';
 
 const DEFAULT_CORNER_RADIUS = 0.0;
 const MAX_CORNER_RADIUS = 0.5;
 
+const clamp01 = (v: number) => Math.max(0, Math.min(1, v));
+
 interface QRCodeOptions extends QRCodeStyle {
   value: string;
   size: number;
+}
+
+interface ResolvedMarkerOptions {
+  connected: boolean;
+  outerCornerRadius: number;
+  innerCornerRadius: number;
+}
+
+interface ResolvedPatternOptions {
+  connected: boolean;
+  cornerRadius: number;
 }
 
 interface CornerRadius {
@@ -137,38 +146,18 @@ const cornersToRadius = (
 const generateDetectionMarkerPath = (
   position: Position,
   cellSize: number,
-  options?: DetectionMarkerOptions,
+  options: ResolvedMarkerOptions,
 ): string => {
   const outerSize = cellSize * 7;
   const padding = cellSize;
   const fillerSize = cellSize * 5;
   const centerPadding = cellSize * 2;
   const innerSize = cellSize * 3;
-  const outerCornerRadiusPercentage = Math.max(
-    0,
-    Math.min(
-      1,
-      options?.outerCornerRadius ??
-        options?.cornerRadius ??
-        DEFAULT_CORNER_RADIUS,
-    ),
-  );
-  const innerCornerRadiusPercentage = Math.max(
-    0,
-    Math.min(
-      1,
-      options?.innerCornerRadius ??
-        options?.cornerRadius ??
-        DEFAULT_CORNER_RADIUS,
-    ),
-  );
 
-  const outerRadius =
-    outerSize * outerCornerRadiusPercentage * MAX_CORNER_RADIUS;
+  const outerRadius = outerSize * options.outerCornerRadius * MAX_CORNER_RADIUS;
   const fillerRadius =
-    fillerSize * outerCornerRadiusPercentage * MAX_CORNER_RADIUS;
-  const innerRadius =
-    innerSize * innerCornerRadiusPercentage * MAX_CORNER_RADIUS;
+    fillerSize * options.outerCornerRadius * MAX_CORNER_RADIUS;
+  const innerRadius = innerSize * options.innerCornerRadius * MAX_CORNER_RADIUS;
 
   return (
     generateSquarePath({
@@ -197,22 +186,18 @@ const generateDetectionMarkerPath = (
 const generatePathFromMatrix = (
   matrix: number[][],
   size: number,
-  detectionMarkerOptions?: DetectionMarkerOptions,
-  patternOptions?: PatternOptions,
+  detectionMarkerOptions: ResolvedMarkerOptions,
+  patternOptions: ResolvedPatternOptions,
 ): PathResult => {
   if (!matrix.length) throw new Error('Matrix cannot be empty');
   const cellSize = size / matrix.length;
-  const patternCornerRadiusPercentage = Math.max(
-    0,
-    Math.min(1, patternOptions?.cornerRadius ?? DEFAULT_CORNER_RADIUS),
-  );
   const patternCornerRadius =
-    cellSize * patternCornerRadiusPercentage * MAX_CORNER_RADIUS;
+    cellSize * patternOptions.cornerRadius * MAX_CORNER_RADIUS;
 
   const path = matrix.reduce((acc, row, y) => {
     for (let x = 0; x < row.length; x++) {
       if (
-        (detectionMarkerOptions?.connected ?? true) &&
+        detectionMarkerOptions.connected &&
         isDrawingDetectionMarker(x, y, matrix.length)
       ) {
         if (isDetectionMarkerStartingPoint(x, y, matrix.length)) {
@@ -229,10 +214,9 @@ const generatePathFromMatrix = (
             position: {x, y},
             size: cellSize,
             cornerRadius: patternCornerRadius,
-            cornersWithRadius:
-              patternOptions?.connected ?? false
-                ? cornersToRadius({x, y}, matrix)
-                : undefined,
+            cornersWithRadius: patternOptions.connected
+              ? cornersToRadius({x, y}, matrix)
+              : undefined,
           });
         }
       }
@@ -250,34 +234,30 @@ export const useQRMatrix = ({
   detectionMarkerOptions,
   patternOptions,
 }: QRCodeOptions): Result<PathResult> => {
-  // Depend on the primitive fields so inline style objects with the same
-  // values do not invalidate the memo on every parent render.
-  const {
-    connected: markerConnected,
-    cornerRadius: markerCornerRadius,
-    outerCornerRadius: markerOuterCornerRadius,
-    innerCornerRadius: markerInnerCornerRadius,
-  } = detectionMarkerOptions ?? {};
-  const {connected: patternConnected, cornerRadius: patternCornerRadius} =
-    patternOptions ?? {};
-
   return useMemo(() => {
     try {
+      const marker: ResolvedMarkerOptions = {
+        connected: detectionMarkerOptions?.connected ?? true,
+        outerCornerRadius: clamp01(
+          detectionMarkerOptions?.outerCornerRadius ??
+            detectionMarkerOptions?.cornerRadius ??
+            DEFAULT_CORNER_RADIUS,
+        ),
+        innerCornerRadius: clamp01(
+          detectionMarkerOptions?.innerCornerRadius ??
+            detectionMarkerOptions?.cornerRadius ??
+            DEFAULT_CORNER_RADIUS,
+        ),
+      };
+      const pattern: ResolvedPatternOptions = {
+        connected: patternOptions?.connected ?? false,
+        cornerRadius: clamp01(
+          patternOptions?.cornerRadius ?? DEFAULT_CORNER_RADIUS,
+        ),
+      };
+
       const matrix = createQRMatrix(value, errorCorrectionLevel);
-      const pathResult = generatePathFromMatrix(
-        matrix,
-        size,
-        {
-          connected: markerConnected,
-          cornerRadius: markerCornerRadius,
-          outerCornerRadius: markerOuterCornerRadius,
-          innerCornerRadius: markerInnerCornerRadius,
-        },
-        {
-          connected: patternConnected,
-          cornerRadius: patternCornerRadius,
-        },
-      );
+      const pathResult = generatePathFromMatrix(matrix, size, marker, pattern);
       return {status: 'success', value: pathResult};
     } catch (error) {
       let failure: Error;
@@ -288,15 +268,17 @@ export const useQRMatrix = ({
       }
       return {status: 'failure', error: failure};
     }
+    // Primitive deps: equal-valued inline option objects must not invalidate
+    // the memo.
   }, [
     value,
     size,
     errorCorrectionLevel,
-    markerConnected,
-    markerCornerRadius,
-    markerOuterCornerRadius,
-    markerInnerCornerRadius,
-    patternConnected,
-    patternCornerRadius,
+    detectionMarkerOptions?.connected,
+    detectionMarkerOptions?.cornerRadius,
+    detectionMarkerOptions?.outerCornerRadius,
+    detectionMarkerOptions?.innerCornerRadius,
+    patternOptions?.connected,
+    patternOptions?.cornerRadius,
   ]);
 };
