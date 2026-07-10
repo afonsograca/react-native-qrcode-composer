@@ -27,7 +27,7 @@ export interface DetectionMarkerOptions {
 
 export interface QRCodeStyle {
   color?: ColorValue;
-  backgroundColor?: string;
+  backgroundColor?: ColorValue;
   quietZone?: number;
   cornerRadius?: number;
   errorCorrectionLevel?: ErrorCorrectionLevel;
