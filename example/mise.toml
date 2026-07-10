@@ -1,0 +1,5 @@
+# JDK 17 is required to build the native Android app (RN 0.74 / AGP 8.2.1).
+# Scoped to example/ so it is only installed on the host, where native builds
+# run — the devcontainer stays JS-only. Node/Yarn are inherited from ../mise.toml.
+[tools]
+java = "temurin-17"
