@@ -1,0 +1,33 @@
+{
+  "name": "react-native-qrcode-composer devcontainer",
+  "image": "mcr.microsoft.com/devcontainers/javascript-node:24-trixie",
+  "workspaceMount": "source=${localWorkspaceFolder},target=/workspace,type=bind,consistency=cached",
+  "workspaceFolder": "/workspace",
+  "initializeCommand": "mkdir -p ${localEnv:HOME}/.pi ${localEnv:HOME}/.claude",
+  "mounts": [
+    "source=${localEnv:HOME}/.pi,target=/home/node/.pi,type=bind,consistency=cached",
+    "source=${localEnv:HOME}/.claude,target=/home/node/.claude,type=bind,consistency=cached"
+  ],
+  "features": {
+    "ghcr.io/devcontainers/features/common-utils:2": {
+      "installZsh": true,
+      "configureZshAsDefaultShell": true
+    },
+    "ghcr.io/devcontainers/features/github-cli:1": {},
+    "ghcr.io/devcontainers-extra/features/mise:1": {},
+    "ghcr.io/devcontainers-extra/features/claude-code:2": {}
+  },
+  "customizations": {
+    "vscode": {
+      "settings": {
+        "terminal.integrated.defaultProfile.linux": "zsh"
+      },
+      "extensions": [
+        "msjsdiag.vscode-react-native",
+        "dbaeumer.vscode-eslint",
+        "esbenp.prettier-vscode"
+      ]
+    }
+  },
+  "postCreateCommand": "mise install 2>/dev/null || true"
+}
