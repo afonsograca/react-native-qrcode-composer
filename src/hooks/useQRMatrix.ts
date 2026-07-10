@@ -97,6 +97,16 @@ const generateSquarePath = ({
     bottomRight: true,
   },
 }: GenerateSquarePathProps): string => {
+  // A zero-radius arc renders as a zero-length segment; skip the corner
+  // commands entirely so default (radius 0) paths stay ~3x smaller.
+  if (cornerRadius === 0) {
+    cornersWithRadius = {
+      topLeft: false,
+      topRight: false,
+      bottomLeft: false,
+      bottomRight: false,
+    };
+  }
   const getRadius = (corner: keyof typeof cornersWithRadius) =>
     cornersWithRadius[corner] ? cornerRadius : 0;
   const cornerRadiusString = cornerRadius.toString();
