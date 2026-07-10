@@ -54,6 +54,9 @@ export interface QRCodeProps extends TestProps {
   logo?: LogoProp;
   logoStyle?: LogoStyle;
   style?: QRCodeStyle;
+  /**
+   * @deprecated Use the standard `ref` prop instead.
+   */
   getRef?: Ref<Svg>;
   onError?: (error: Error) => void;
 }

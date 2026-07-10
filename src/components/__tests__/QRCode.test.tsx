@@ -1,4 +1,5 @@
 import React from 'react';
+import type Svg from 'react-native-svg';
 import {render, renderHook, screen} from '@testing-library/react-native';
 import {DEFAULT_TEST_ID, QRCode} from '../QRCode';
 import Logo from 'logo.svg';
@@ -75,6 +76,16 @@ describe('QRCode', () => {
     expect(screen.queryByTestId(`${DEFAULT_TEST_ID}.error`)).toBeNull();
     expect(screen.queryByTestId(`${DEFAULT_TEST_ID}.logo`)).not.toBeNull();
     expect(screen.queryByTestId(`${DEFAULT_TEST_ID}.qrcode`)).not.toBeNull();
+  });
+
+  it('forwards the ref to the underlying Svg', () => {
+    const ref = React.createRef<Svg>();
+    const getRef = jest.fn();
+
+    render(<QRCode value={DEFAULT_VALUE} ref={ref} getRef={getRef} />);
+
+    expect(ref.current).not.toBeNull();
+    expect(getRef).toHaveBeenCalledWith(ref.current);
   });
 
   describe('when there is an error', () => {
