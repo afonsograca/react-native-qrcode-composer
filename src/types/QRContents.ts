@@ -214,17 +214,17 @@ const encodeCalendarEventContents = (contents: CalendarEvent): string => {
   ].join('\r\n');
 };
 
-interface PlainText {
+export interface PlainText {
   type: 'plain-text';
   content: string;
 }
 
-interface URL {
+export interface URL {
   type: 'url';
   url: string;
 }
 
-interface Email {
+export interface Email {
   type: 'email';
   email: string;
   subject?: string;
@@ -233,19 +233,19 @@ interface Email {
   bcc?: string;
 }
 
-interface Phone {
+export interface Phone {
   type: 'phone';
   telephone: string;
 }
 
-interface SMS {
+export interface SMS {
   type: 'sms';
   phoneNumber: string;
   message?: string;
 }
 
-type SecurityType = 'WEP' | 'WPA' | 'WPA3' | 'nopass';
-interface WiFi {
+export type SecurityType = 'WEP' | 'WPA' | 'WPA3' | 'nopass';
+export interface WiFi {
   type: 'wifi';
   security: SecurityType;
   ssid: string;
@@ -253,14 +253,14 @@ interface WiFi {
   hidden?: boolean;
 }
 
-interface Geolocation {
+export interface Geolocation {
   type: 'geolocation';
   latitude: number;
   longitude: number;
   altitude?: number;
 }
 
-interface VCard {
+export interface VCard {
   type: 'vcard';
   version?: '2.1' | '3.0' | '4.0';
   address?: string;
@@ -298,7 +298,7 @@ interface VCard {
   xml?: string;
 }
 
-interface MeCard {
+export interface MeCard {
   type: 'mecard';
   address?: string;
   birthday?: Date;
@@ -313,7 +313,7 @@ interface MeCard {
   website?: string;
 }
 
-interface CalendarEvent {
+export interface CalendarEvent {
   type: 'calendar-event';
   uid: string;
   dtStart: Date;
