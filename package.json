@@ -1,6 +1,6 @@
 {
   "name": "react-native-qrcode-composer",
-  "version": "0.2.0",
+  "version": "0.3.0",
   "description": "A customizable QR code component for React Native, rendered with SVG.",
   "author": "Afonso Graça",
   "packageManager": "yarn@4.17.1",
