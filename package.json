@@ -1,6 +1,8 @@
 {
   "name": "react-native-qrcode-composer",
   "version": "0.2.0",
+  "description": "A customizable QR code component for React Native, rendered with SVG.",
+  "author": "Afonso Graça",
   "packageManager": "yarn@4.17.1",
   "scripts": {
     "prepare": "bob build",
@@ -31,9 +33,9 @@
     "!**/__tests__",
     "!**/__fixtures__",
     "!**/__mocks__",
-    "README.md",
-    "LICENSE",
-    "CHANGELOG.md"
+    "/README.md",
+    "/LICENSE",
+    "/CHANGELOG.md"
   ],
   "keywords": [
     "react-native",
@@ -56,6 +58,7 @@
     "url": "https://github.com/afonsograca/react-native-qrcode-composer/issues"
   },
   "license": "MIT",
+  "sideEffects": false,
   "engines": {
     "node": ">=18.0.0"
   },
