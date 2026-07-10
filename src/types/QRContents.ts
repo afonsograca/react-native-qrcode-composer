@@ -68,16 +68,20 @@ const dateTime = (value?: Date): FieldValue =>
 const delimited = (value?: string): FieldValue =>
   encodeField(value, escapeDelimiters);
 
+const encodeMailtoQuery = (params: [string, FieldValue][]): string =>
+  params
+    .flatMap(([key, value]) =>
+      value != null ? [`${key}=${encodeURIComponent(value)}`] : [],
+    )
+    .join('&');
+
 const encodeEmailContents = (contents: Email): string => {
-  const subject =
-    contents.subject != null
-      ? `subject=${encodeURIComponent(contents.subject)}`
-      : '';
-  const body =
-    contents.body != null ? `body=${encodeURIComponent(contents.body)}` : '';
-  const cc = contents.cc != null ? `cc=${encodeURI(contents.cc)}` : '';
-  const bcc = contents.bcc != null ? `bcc=${encodeURI(contents.bcc)}` : '';
-  const query = [subject, body, cc, bcc].filter(x => x).join('&');
+  const query = encodeMailtoQuery([
+    ['subject', contents.subject],
+    ['body', contents.body],
+    ['cc', contents.cc],
+    ['bcc', contents.bcc],
+  ]);
   return `mailto:${encodeURI(contents.email)}` + (query ? `?${query}` : '');
 };
 
@@ -96,10 +100,8 @@ const encodeWiFiContents = (contents: WiFi): string =>
   ';;';
 
 const encodeGeolocationContents = (contents: GeolocationContent): string =>
-  `geo:${encodeURIComponent(contents.latitude)},${encodeURIComponent(contents.longitude)}` +
-  (contents.altitude != null
-    ? `,${encodeURIComponent(contents.altitude)}`
-    : '');
+  `geo:${String(contents.latitude)},${String(contents.longitude)}` +
+  (contents.altitude != null ? `,${String(contents.altitude)}` : '');
 
 const encodeVCardContents = (contents: VCard): string => {
   const fields: [string, FieldValue][] = [

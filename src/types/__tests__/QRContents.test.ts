@@ -64,7 +64,7 @@ describe('QRContents', () => {
         bcc: 'bcc@example.com',
       };
       expect(encodeQRCodeContents(email)).toEqual(
-        'mailto:test@example.com?subject=Test%20Subject&body=Test%20Body&cc=cc@example.com&bcc=bcc@example.com',
+        'mailto:test@example.com?subject=Test%20Subject&body=Test%20Body&cc=cc%40example.com&bcc=bcc%40example.com',
       );
     });
 
@@ -93,7 +93,20 @@ describe('QRContents', () => {
         cc: 'cc@example.com',
       };
       expect(encodeQRCodeContents(email)).toEqual(
-        'mailto:test@example.com?cc=cc@example.com',
+        'mailto:test@example.com?cc=cc%40example.com',
+      );
+    });
+
+    it('should percent-encode reserved characters in cc and bcc', () => {
+      const email = {
+        type: 'email' as const,
+        email: 'test@example.com',
+        cc: 'a&b=c@example.com',
+        bcc: 'd+e?f@example.com',
+      };
+      expect(encodeQRCodeContents(email)).toEqual(
+        'mailto:test@example.com?cc=a%26b%3Dc%40example.com' +
+          '&bcc=d%2Be%3Ff%40example.com',
       );
     });
 
