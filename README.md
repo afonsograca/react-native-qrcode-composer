@@ -69,17 +69,17 @@ The following sections provide more details about these props and how to use the
 
 ### QRCodeProps
 
-| Property    | Type                               | Optional | Default                          | Description                                                                                                                               |
-| ----------- | ---------------------------------- | -------- | -------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------- |
-| `value`     | [`QRCodeContents`](#content-types) | No       | —                                | The content to be encoded in the QR code — a plain string or one of the typed [content objects](#content-types)                           |
-| `size`      | number                             | Yes      | `100`                            | The size of the QR code in pixels                                                                                                         |
-| `logo`      | `LogoProp`                         | Yes      | `undefined`                      | A custom logo to be displayed at the center of the QR code                                                                                |
-| `logoStyle` | [LogoStyle](#logostyle)            | Yes      | `undefined`                      | The style of the logo                                                                                                                     |
-| `style`     | [QRCodeStyle](#qrcodestyle)        | Yes      | `undefined`                      | The style of the QR code container                                                                                                        |
-| `ref`       | `React.Ref<Svg>`                   | Yes      | `undefined`                      | A ref to the underlying `react-native-svg` `Svg` element                                                                                  |
-| `getRef`    | `React.Ref<Svg>`                   | Yes      | `undefined`                      | **Deprecated** — use `ref` instead. A ref to the QR code SVG element for direct access                                                    |
-| `onError`   | `(error: Error) => void`           | Yes      | `undefined`                      | Callback function triggered if an error occurs during encoding or rendering. When an error occurs, the component renders nothing (`null`) |
-| `testID`    | `string`                           | Yes      | `'react-native-qrcode-composer'` | Identification prefix for the internal parts of the component                                                                             |
+| Property    | Type                               | Optional | Default                          | Description                                                                                                                                                                                                                                               |
+| ----------- | ---------------------------------- | -------- | -------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `value`     | [`QRCodeContents`](#content-types) | No       | —                                | The content to be encoded in the QR code — a plain string or one of the typed [content objects](#content-types)                                                                                                                                           |
+| `size`      | number                             | Yes      | `100`                            | The size of the QR code in pixels                                                                                                                                                                                                                         |
+| `logo`      | `LogoProp`                         | Yes      | `undefined`                      | A custom logo to be displayed at the center of the QR code                                                                                                                                                                                                |
+| `logoStyle` | [LogoStyle](#logostyle)            | Yes      | `undefined`                      | The style of the logo                                                                                                                                                                                                                                     |
+| `style`     | [QRCodeStyle](#qrcodestyle)        | Yes      | `undefined`                      | The style of the QR code container                                                                                                                                                                                                                        |
+| `ref`       | `React.Ref<Svg>`                   | Yes      | `undefined`                      | A ref to the underlying `react-native-svg` `Svg` element                                                                                                                                                                                                  |
+| `getRef`    | `React.Ref<Svg>`                   | Yes      | `undefined`                      | **Deprecated** — use `ref` instead. A ref to the QR code SVG element for direct access                                                                                                                                                                    |
+| `onError`   | `(error: Error) => void`           | Yes      | `undefined`                      | Callback function triggered if an error occurs during encoding or rendering. When an error occurs, the component renders nothing (`null`). Fires once per distinct error, not on every failing render, only firing again when the error changes or clears |
+| `testID`    | `string`                           | Yes      | `'react-native-qrcode-composer'` | Identification prefix for the internal parts of the component                                                                                                                                                                                             |
 
 The `logo` prop accepts a `LogoProp`, which is `ImageSourcePropType | React.FunctionComponent<SvgProps>` — either a React Native image source (for PNG/remote logos) or an SVG component (for vector logos). `LogoProp` is exported from the package.
 
@@ -122,18 +122,18 @@ The `value` prop accepts a `QRCodeContents` value: either a plain `string` (enco
 
 #### Phone
 
-| Property    | Type      | Optional | Description                |
-| ----------- | --------- | -------- | -------------------------- |
-| `type`      | `'phone'` | No       | Content type discriminator |
-| `telephone` | string    | No       | The phone number to dial   |
+| Property    | Type      | Optional | Description                                                                             |
+| ----------- | --------- | -------- | --------------------------------------------------------------------------------------- |
+| `type`      | `'phone'` | No       | Content type discriminator                                                              |
+| `telephone` | string    | No       | The phone number to dial. Spaces, parentheses, and hyphens are stripped before encoding |
 
 #### SMS
 
-| Property      | Type    | Optional | Description                 |
-| ------------- | ------- | -------- | --------------------------- |
-| `type`        | `'sms'` | No       | Content type discriminator  |
-| `phoneNumber` | string  | No       | The phone number to message |
-| `message`     | string  | Yes      | A prefilled message         |
+| Property      | Type    | Optional | Description                                                                                |
+| ------------- | ------- | -------- | ------------------------------------------------------------------------------------------ |
+| `type`        | `'sms'` | No       | Content type discriminator                                                                 |
+| `phoneNumber` | string  | No       | The phone number to message. Spaces, parentheses, and hyphens are stripped before encoding |
+| `message`     | string  | Yes      | A prefilled message. Percent-encoded (`encodeURIComponent`) in the generated payload       |
 
 #### WiFi
 
@@ -273,12 +273,12 @@ The `value` prop accepts a `QRCodeContents` value: either a plain `string` (enco
 
 ### LogoStyle
 
-| Property          | Type   | Optional | Default                 | Description                                                                                                                                                                                                               |
-| ----------------- | ------ | -------- | ----------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `size`            | number | Yes      | 20% of the QR code size | The size of the logo in pixels                                                                                                                                                                                            |
-| `backgroundColor` | string | Yes      | `transparent`           | The background color of the logo                                                                                                                                                                                          |
-| `margin`          | number | Yes      | `0`                     | The margin around the logo in pixels                                                                                                                                                                                      |
-| `borderRadius`    | number | Yes      | `0`                     | The border radius of the logo's corners, in pixels. The logo's background rectangle uses this radius plus the `margin` so its corners track the logo's. Set it to half the logo `size` for a circular logo and background |
+| Property          | Type         | Optional | Default                 | Description                                                                                                                                                                                                               |
+| ----------------- | ------------ | -------- | ----------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `size`            | number       | Yes      | 20% of the QR code size | The size of the logo in pixels                                                                                                                                                                                            |
+| `backgroundColor` | `ColorValue` | Yes      | `transparent`           | The background color of the logo                                                                                                                                                                                          |
+| `margin`          | number       | Yes      | `0`                     | The margin around the logo in pixels                                                                                                                                                                                      |
+| `borderRadius`    | number       | Yes      | `0`                     | The border radius of the logo's corners, in pixels. The logo's background rectangle uses this radius plus the `margin` so its corners track the logo's. Set it to half the logo `size` for a circular logo and background |
 
 ### QRCodeStyle
 
@@ -323,7 +323,7 @@ The `value` prop accepts a `QRCodeContents` value: either a plain `string` (enco
 | `connected`    | boolean | Yes      | `false` | Indicates if the blocks in the QR code pattern are connected                                  |
 | `cornerRadius` | number  | Yes      | `0`     | Corner roundness of each block in the QR code pattern, from `0` (square) to `1` (fully round) |
 
-> **Note on corner radius units:** `style.cornerRadius` (the background rectangle) and `logoStyle.borderRadius` are expressed in absolute pixels, whereas `patternOptions.cornerRadius` and the `detectionMarkerOptions` corner radii are roundness fractions between 0 (square corners) and 1 (fully round, i.e. a radius of half the module/marker size).
+> **Note on corner radius units:** `style.cornerRadius` (the background rectangle) and `logoStyle.borderRadius` are expressed in absolute pixels, whereas `patternOptions.cornerRadius` and the `detectionMarkerOptions` corner radii are roundness fractions between 0 (square corners) and 1 (fully round, i.e. a radius of half the module/marker size). Values outside this range are silently clamped into [0, 1].
 
 ## Try it out
 
