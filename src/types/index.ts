@@ -59,8 +59,8 @@ export interface LogoStyle {
   borderRadius?: number;
 }
 
-export interface TestProps<T extends string = string> {
-  testID?: T;
+export interface TestProps {
+  testID?: string;
 }
 
 export interface QRCodeProps extends TestProps {
