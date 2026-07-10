@@ -77,16 +77,20 @@ function App(): React.JSX.Element {
           ]}
         >
           <Section title="Simple">
-            <QRCode value={{type: 'plain-text', content: 'FOOBAR'}} />
+            <QRCode value="Simple QR code" />
           </Section>
           <Section title="With size">
-            <QRCode size={200} />
+            <QRCode value="QR code with a custom size" size={200} />
           </Section>
           <Section title="With color">
-            <QRCode style={{color: '#753a88', backgroundColor: '#FF0099'}} />
+            <QRCode
+              value="QR code with custom colors"
+              style={{color: '#753a88', backgroundColor: '#FF0099'}}
+            />
           </Section>
           <Section title="With gradient">
             <QRCode
+              value="QR code with a gradient"
               style={{
                 linearGradient: ['#FBD786', '#f7797d'],
               }}
@@ -94,6 +98,7 @@ function App(): React.JSX.Element {
           </Section>
           <Section title="Round Detection Markers">
             <QRCode
+              value="QR code with round detection markers"
               style={{
                 detectionMarkerOptions: {
                   cornerRadius: 1,
@@ -103,6 +108,7 @@ function App(): React.JSX.Element {
           </Section>
           <Section title="Mixed round detection markers">
             <QRCode
+              value="QR code with mixed round detection markers"
               style={{
                 detectionMarkerOptions: {
                   outerCornerRadius: 0.5,
@@ -113,6 +119,7 @@ function App(): React.JSX.Element {
           </Section>
           <Section title="Rounded pattern styling">
             <QRCode
+              value="QR code with a rounded pattern"
               style={{
                 patternOptions: {
                   cornerRadius: 1,
@@ -122,6 +129,7 @@ function App(): React.JSX.Element {
           </Section>
           <Section title="Connected rounded pattern styling">
             <QRCode
+              value="QR code with a connected rounded pattern"
               style={{
                 patternOptions: {
                   connected: true,
@@ -131,13 +139,14 @@ function App(): React.JSX.Element {
             />
           </Section>
           <Section title="Image Logo">
-            <QRCode logo={placeholder} />
+            <QRCode value="QR code with an image logo" logo={placeholder} />
           </Section>
           <Section title="SVG Logo">
-            <QRCode logo={Logo} />
+            <QRCode value="QR code with an SVG logo" logo={Logo} />
           </Section>
           <Section title="Logo with styling">
             <QRCode
+              value="QR code with a styled logo"
               logo={Logo}
               logoStyle={{
                 backgroundColor: '#99f2c8',

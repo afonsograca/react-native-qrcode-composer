@@ -49,7 +49,7 @@ export interface TestProps<T extends string = string> {
 }
 
 export interface QRCodeProps extends TestProps {
-  value?: QRCodeContents;
+  value: QRCodeContents;
   size?: number;
   logo?: LogoProp;
   logoStyle?: LogoStyle;

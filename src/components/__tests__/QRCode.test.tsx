@@ -5,25 +5,31 @@ import Logo from 'logo.svg';
 import * as UseQRMatrixHook from '../../hooks/useQRMatrix';
 import {useQRMatrix} from '../../hooks/useQRMatrix';
 
+const DEFAULT_VALUE = 'QR code message';
+
 describe('QRCode', () => {
   afterEach(jest.restoreAllMocks);
 
   describe('Snapshots', () => {
     it('renders a default QR code', () => {
-      const qrCode = render(<QRCode />).toJSON() as unknown;
+      const qrCode = render(
+        <QRCode value={DEFAULT_VALUE} />,
+      ).toJSON() as unknown;
 
       expect(qrCode).toMatchSnapshot();
     });
 
     it('renders a QR code with a logo', () => {
-      const qrCode = render(<QRCode logo={Logo} />).toJSON() as unknown;
+      const qrCode = render(
+        <QRCode value={DEFAULT_VALUE} logo={Logo} />,
+      ).toJSON() as unknown;
 
       expect(qrCode).toMatchSnapshot();
     });
   });
 
   it('renders without error', () => {
-    render(<QRCode />);
+    render(<QRCode value={DEFAULT_VALUE} />);
 
     expect(screen.queryByTestId(`${DEFAULT_TEST_ID}.error`)).toBeNull();
     expect(screen.queryByTestId(`${DEFAULT_TEST_ID}.logo`)).toBeNull();
@@ -32,7 +38,7 @@ describe('QRCode', () => {
 
   it('renders with custom size', () => {
     const size = 200;
-    render(<QRCode size={size} />);
+    render(<QRCode value={DEFAULT_VALUE} size={size} />);
 
     const qrCodeProps = screen.queryByTestId(
       `${DEFAULT_TEST_ID}.qrcode`,
@@ -64,7 +70,7 @@ describe('QRCode', () => {
   });
 
   it('renders with custom logo', () => {
-    render(<QRCode logo={Logo} />);
+    render(<QRCode value={DEFAULT_VALUE} logo={Logo} />);
 
     expect(screen.queryByTestId(`${DEFAULT_TEST_ID}.error`)).toBeNull();
     expect(screen.queryByTestId(`${DEFAULT_TEST_ID}.logo`)).not.toBeNull();
@@ -81,7 +87,7 @@ describe('QRCode', () => {
         error: error,
       });
 
-      render(<QRCode onError={onError} />);
+      render(<QRCode value={DEFAULT_VALUE} onError={onError} />);
 
       expect(onError).toHaveBeenCalledWith(error);
     });
@@ -92,7 +98,7 @@ describe('QRCode', () => {
         error: error,
       });
 
-      render(<QRCode />);
+      render(<QRCode value={DEFAULT_VALUE} />);
 
       expect(screen.getByTestId(`${DEFAULT_TEST_ID}.error`)).toHaveTextContent(
         error.message,
