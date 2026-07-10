@@ -1,4 +1,4 @@
-import {encodeQRCodeContents} from '../QRContents';
+import {encodeQRCodeContents} from '../encodeContents';
 
 describe('QRContents', () => {
   describe('Plain text', () => {

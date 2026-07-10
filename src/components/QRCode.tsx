@@ -3,7 +3,7 @@ import Svg, {Defs, G, Path, Rect, LinearGradient, Stop} from 'react-native-svg';
 import {useQRMatrix} from '../hooks/useQRMatrix';
 import {useLogo} from '../hooks/useLogo';
 import {type QRCodeProps} from '../types';
-import {encodeQRCodeContents} from '../types/QRContents';
+import {encodeQRCodeContents} from '../encoding';
 import type {QRCodeContents} from '../types/QRContents';
 import type {Result} from '../types/result';
 import {svgLocalId} from '../utils/svgId';
