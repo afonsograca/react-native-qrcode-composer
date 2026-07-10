@@ -1,6 +1,6 @@
 {
   "name": "react-native-qrcode-composer devcontainer",
-  "image": "mcr.microsoft.com/devcontainers/javascript-node:24-trixie",
+  "image": "mcr.microsoft.com/devcontainers/javascript-node:20-trixie",
   "workspaceMount": "source=${localWorkspaceFolder},target=/workspace,type=bind,consistency=cached",
   "workspaceFolder": "/workspace",
   "initializeCommand": "mkdir -p ${localEnv:HOME}/.pi ${localEnv:HOME}/.claude",
