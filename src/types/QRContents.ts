@@ -1,12 +1,12 @@
 export type QRCodeContents =
   | string
   | PlainText
-  | URL
+  | URLContent
   | Email
   | Phone
   | SMS
   | WiFi
-  | Geolocation
+  | GeolocationContent
   | VCard
   | MeCard
   | CalendarEvent;
@@ -95,7 +95,7 @@ const encodeWiFiContents = (contents: WiFi): string =>
   (contents.hidden != null ? `;H:${contents.hidden.toString()}` : '') +
   ';;';
 
-const encodeGeolocationContents = (contents: Geolocation): string =>
+const encodeGeolocationContents = (contents: GeolocationContent): string =>
   `geo:${encodeURIComponent(contents.latitude)},${encodeURIComponent(contents.longitude)}` +
   (contents.altitude != null
     ? `,${encodeURIComponent(contents.altitude)}`
@@ -223,7 +223,7 @@ export interface PlainText {
   content: string;
 }
 
-export interface URL {
+export interface URLContent {
   type: 'url';
   url: string;
 }
@@ -257,7 +257,7 @@ export interface WiFi {
   hidden?: boolean;
 }
 
-export interface Geolocation {
+export interface GeolocationContent {
   type: 'geolocation';
   latitude: number;
   longitude: number;

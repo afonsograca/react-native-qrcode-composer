@@ -10,7 +10,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 
 - Typed QR code contents: the `value` prop now accepts `QRCodeContents`, a union of `string` and typed content objects for plain text, URLs, email, phone, SMS, WiFi, geolocation, vCard, MeCard, and calendar events
-- The content interfaces (`PlainText`, `URL`, `Email`, `Phone`, `SMS`, `WiFi`, `Geolocation`, `VCard`, `MeCard`, `CalendarEvent`) and `QRCodeContents` are exported from the package
+- The content interfaces (`PlainText`, `URLContent`, `Email`, `Phone`, `SMS`, `WiFi`, `GeolocationContent`, `VCard`, `MeCard`, `CalendarEvent`) and `QRCodeContents` are exported from the package
 - Support for the standard `ref` prop, forwarded to the underlying `react-native-svg` `Svg` element
 
 ### Changed

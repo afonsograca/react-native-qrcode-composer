@@ -3,18 +3,16 @@ export {ErrorCorrectionLevel} from './types';
 export type {
   QRCodeContents,
   PlainText,
-  URL,
+  URLContent,
   Email,
   Phone,
   SMS,
   SecurityType,
   WiFi,
-  Geolocation,
+  GeolocationContent,
   VCard,
   MeCard,
   CalendarEvent,
-} from './types/QRContents';
-export type {
   LogoProp,
   PatternOptions,
   DetectionMarkerOptions,

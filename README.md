@@ -81,7 +81,7 @@ The following sections provide more details about these props and how to use the
 
 ### Content types
 
-The `value` prop accepts a `QRCodeContents` value: either a plain `string` (encoded as-is) or one of the typed content objects below, discriminated by their `type` field. Typed objects are encoded into the appropriate payload format (mailto, WIFI, vCard, iCalendar, etc.) for you. `QRCodeContents` and all of the content interfaces (`PlainText`, `URL`, `Email`, `Phone`, `SMS`, `WiFi`, `Geolocation`, `VCard`, `MeCard`, `CalendarEvent`) are exported from the package.
+The `value` prop accepts a `QRCodeContents` value: either a plain `string` (encoded as-is) or one of the typed content objects below, discriminated by their `type` field. Typed objects are encoded into the appropriate payload format (mailto, WIFI, vCard, iCalendar, etc.) for you. `QRCodeContents` and all of the content interfaces (`PlainText`, `URLContent`, `Email`, `Phone`, `SMS`, `WiFi`, `GeolocationContent`, `VCard`, `MeCard`, `CalendarEvent`) are exported from the package.
 
 ```typescript
 // Plain string

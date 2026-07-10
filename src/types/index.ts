@@ -4,6 +4,21 @@ import type {NumberProp, SvgProps} from 'react-native-svg';
 import type Svg from 'react-native-svg';
 import type {QRCodeContents} from './QRContents';
 
+export type {
+  QRCodeContents,
+  PlainText,
+  URLContent,
+  Email,
+  Phone,
+  SMS,
+  SecurityType,
+  WiFi,
+  GeolocationContent,
+  VCard,
+  MeCard,
+  CalendarEvent,
+} from './QRContents';
+
 export type LogoProp = ImageSourcePropType | React.FunctionComponent<SvgProps>;
 
 export enum ErrorCorrectionLevel {
