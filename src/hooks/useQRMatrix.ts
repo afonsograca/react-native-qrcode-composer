@@ -9,9 +9,12 @@ import type {Result} from '../types/result';
 import {tryResult} from '../types/result';
 
 const DEFAULT_CORNER_RADIUS = 0.0;
-const MAX_CORNER_RADIUS = 0.5;
 
 const clamp01 = (v: number) => Math.max(0, Math.min(1, v));
+
+// 0–1 sweeps square → fully round; size/2 is the geometric maximum radius.
+const cornerRadiusToPixels = (fraction: number, size: number): number =>
+  (fraction * size) / 2;
 
 interface QRCodeOptions {
   value: QRCodeContents;
@@ -156,10 +159,18 @@ const generateDetectionMarkerPath = (
   const centerPadding = cellSize * 2;
   const innerSize = cellSize * 3;
 
-  const outerRadius = outerSize * options.outerCornerRadius * MAX_CORNER_RADIUS;
-  const fillerRadius =
-    fillerSize * options.outerCornerRadius * MAX_CORNER_RADIUS;
-  const innerRadius = innerSize * options.innerCornerRadius * MAX_CORNER_RADIUS;
+  const outerRadius = cornerRadiusToPixels(
+    options.outerCornerRadius,
+    outerSize,
+  );
+  const fillerRadius = cornerRadiusToPixels(
+    options.outerCornerRadius,
+    fillerSize,
+  );
+  const innerRadius = cornerRadiusToPixels(
+    options.innerCornerRadius,
+    innerSize,
+  );
 
   return (
     generateSquarePath({
@@ -193,8 +204,10 @@ const generatePathFromMatrix = (
 ): string => {
   if (!matrix.length) throw new Error('Matrix cannot be empty');
   const cellSize = size / matrix.length;
-  const patternCornerRadius =
-    cellSize * patternOptions.cornerRadius * MAX_CORNER_RADIUS;
+  const patternCornerRadius = cornerRadiusToPixels(
+    patternOptions.cornerRadius,
+    cellSize,
+  );
 
   const path = matrix.reduce((acc, row, y) => {
     for (let x = 0; x < row.length; x++) {
