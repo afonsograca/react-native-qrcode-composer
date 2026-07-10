@@ -79,6 +79,23 @@ describe('QRCode', () => {
     expect(screen.queryByTestId(`${DEFAULT_TEST_ID}.qrcode`)).not.toBeNull();
   });
 
+  it('prefixes internal logo testIDs so two instances do not collide', () => {
+    render(
+      <>
+        <QRCode value={DEFAULT_VALUE} logo={Logo} testID="first" />
+        <QRCode value={DEFAULT_VALUE} logo={Logo} testID="second" />
+      </>,
+    );
+
+    expect(screen.getByTestId('first.logo.g.logo-container')).toBeDefined();
+    expect(screen.getByTestId('first.logo.rect.logo-background')).toBeDefined();
+    expect(screen.getByTestId('second.logo.g.logo-container')).toBeDefined();
+    expect(
+      screen.getByTestId('second.logo.rect.logo-background'),
+    ).toBeDefined();
+    expect(screen.queryAllByTestId('rect.logo-background')).toHaveLength(0);
+  });
+
   it('forwards the ref to the underlying Svg', () => {
     const ref = React.createRef<Svg>();
     const getRef = jest.fn();

@@ -58,7 +58,7 @@ export const Logo = ({
       <Defs>
         <ClipPath id={logoBackgroundClipPathId}>
           <Rect
-            testID={`rect.${logoBackgroundClipPath}`}
+            testID={`${testID}.rect.${logoBackgroundClipPath}`}
             width={backgroundSize}
             height={backgroundSize}
             rx={backgroundBorderRadius}
@@ -67,7 +67,7 @@ export const Logo = ({
         </ClipPath>
         <ClipPath id={logoClipPathId}>
           <Rect
-            testID={`rect.${logoClipPath}`}
+            testID={`${testID}.rect.${logoClipPath}`}
             width={size}
             height={size}
             rx={borderRadius}
@@ -77,14 +77,14 @@ export const Logo = ({
       </Defs>
       <G>
         <Rect
-          testID="rect.logo-background"
+          testID={`${testID}.rect.logo-background`}
           width={backgroundSize}
           height={backgroundSize}
           fill={backgroundColor}
           clipPath={`url(#${logoBackgroundClipPathId})`}
         />
       </G>
-      <G x={margin} y={margin} testID="g.logo-container">
+      <G x={margin} y={margin} testID={`${testID}.g.logo-container`}>
         {LogoElement !== undefined ? (
           <LogoElement
             width={size}

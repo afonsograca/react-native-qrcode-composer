@@ -19,7 +19,7 @@ describe('Logo', () => {
       const backgroundColor = 'red';
       const logoComponent = LogoView({
         qrCodeSize: 100,
-        testID: '',
+        testID: 'prefix.logo',
         instanceId: 1,
         logo: Logo,
         logoStyle: {backgroundColor},
@@ -27,7 +27,7 @@ describe('Logo', () => {
       const logoBackground = findChildComponent(
         logoComponent,
         Rect,
-        'rect.logo-background',
+        'prefix.logo.rect.logo-background',
       );
 
       expect(logoBackground?.props).toEqual(
@@ -39,7 +39,7 @@ describe('Logo', () => {
       const margin = 50;
       const logoComponent = LogoView({
         qrCodeSize: 100,
-        testID: '',
+        testID: 'prefix.logo',
         instanceId: 1,
         logo: Logo,
         logoStyle: {margin},
@@ -47,7 +47,7 @@ describe('Logo', () => {
       const logoContainer = findChildComponent(
         logoComponent,
         G,
-        'g.logo-container',
+        'prefix.logo.g.logo-container',
       );
 
       expect(logoContainer?.props).toEqual(
@@ -59,7 +59,7 @@ describe('Logo', () => {
       const borderRadius = 10;
       const logoComponent = LogoView({
         qrCodeSize: 100,
-        testID: '',
+        testID: 'prefix.logo',
         instanceId: 1,
         logo: Logo,
         logoStyle: {borderRadius},
@@ -67,7 +67,7 @@ describe('Logo', () => {
       const logoClip = findChildComponent(
         logoComponent,
         Rect,
-        'rect.logo-clip-path',
+        'prefix.logo.rect.logo-clip-path',
       );
       expect(logoClip?.props).toEqual(
         expect.objectContaining({rx: borderRadius, ry: borderRadius}),
@@ -79,7 +79,7 @@ describe('Logo', () => {
       const margin = 4;
       const logoComponent = LogoView({
         qrCodeSize: 100,
-        testID: '',
+        testID: 'prefix.logo',
         instanceId: 1,
         logo: Logo,
         logoStyle: {borderRadius, margin},
@@ -87,7 +87,7 @@ describe('Logo', () => {
       const backgroundClip = findChildComponent(
         logoComponent,
         Rect,
-        'rect.logo-background-clip-path',
+        'prefix.logo.rect.logo-background-clip-path',
       );
       expect(backgroundClip?.props).toEqual(
         expect.objectContaining({

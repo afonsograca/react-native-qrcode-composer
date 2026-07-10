@@ -36,6 +36,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Calendar events are now wrapped in `BEGIN:VCALENDAR`/`END:VCALENDAR`
 - vCard now encodes all of its typed fields (previously around 20 fields, such as `telephone`, `organization`, and `title`, were silently dropped)
 - `VCard.name` given as a plain string is now escaped like every other text field (commas and semicolons no longer corrupt the payload)
+- The `testID` prefix is now applied to the logo's internal nodes (background, clip paths, container), so two QR codes with distinct `testID`s no longer collide on them
 - Removed the broken `import` condition from the package `exports` map: it pointed Node ESM consumers at ESM-syntax files in a CommonJS package, causing parse failures
 
 ## [0.2.0] - 2024-06-21
