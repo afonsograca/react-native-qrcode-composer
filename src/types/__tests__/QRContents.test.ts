@@ -346,4 +346,363 @@ describe('QRContents', () => {
       expect(encodeQRCodeContents(geolocation)).toEqual('geo:1.234,5.678');
     });
   });
+
+  describe('MeCard QRCodeContents', () => {
+    it('should encode MeCard with minimal fields correctly', () => {
+      const mecard = {
+        type: 'mecard' as const,
+        firstName: 'John',
+        lastName: 'Doe',
+      };
+      expect(encodeQRCodeContents(mecard)).toEqual('MECARD:N:Doe,John;;');
+    });
+
+    it('should encode MeCard with all fields correctly', () => {
+      const mecard = {
+        type: 'mecard' as const,
+        firstName: 'John',
+        lastName: 'Doe',
+        nickname: 'Johnny',
+        telephone: '+1234567890',
+        email: 'john@example.com',
+        birthday: new Date(1990, 0, 5),
+        address: '123 Main St',
+        sound: 'dou',
+        website: 'example.com',
+        note: 'A note',
+        videoCall: 'video.example.com',
+      };
+      expect(encodeQRCodeContents(mecard)).toEqual(
+        'MECARD:N:Doe,John;NICKNAME:Johnny;TEL:+1234567890;' +
+          'EMAIL:john@example.com;BDAY:19900105;ADR:123 Main St;SOUND:dou;' +
+          'URL:example.com;NOTE:A note;VIDEO:video.example.com;;',
+      );
+    });
+
+    it('should encode the nickname with its own key', () => {
+      const mecard = {
+        type: 'mecard' as const,
+        firstName: 'John',
+        lastName: 'Doe',
+        nickname: 'Johnny',
+        telephone: '123456789',
+      };
+      expect(encodeQRCodeContents(mecard)).toEqual(
+        'MECARD:N:Doe,John;NICKNAME:Johnny;TEL:123456789;;',
+      );
+    });
+
+    it('should escape special characters in values', () => {
+      const mecard = {
+        type: 'mecard' as const,
+        firstName: 'Ann,Marie',
+        lastName: 'O;Brien',
+        note: 'quote:"hi"\\bye',
+      };
+      expect(encodeQRCodeContents(mecard)).toEqual(
+        'MECARD:N:O\\;Brien,Ann\\,Marie;NOTE:quote\\:\\"hi\\"\\\\bye;;',
+      );
+    });
+
+    it('should format the birthday as YYYYMMDD', () => {
+      const mecard = {
+        type: 'mecard' as const,
+        firstName: 'John',
+        lastName: 'Doe',
+        birthday: new Date(2024, 11, 31),
+      };
+      expect(encodeQRCodeContents(mecard)).toEqual(
+        'MECARD:N:Doe,John;BDAY:20241231;;',
+      );
+    });
+  });
+
+  describe('VCard QRCodeContents', () => {
+    it('should encode vCard with minimal fields correctly', () => {
+      const vcard = {type: 'vcard' as const, fullName: 'John Doe'};
+      expect(encodeQRCodeContents(vcard)).toEqual(
+        ['BEGIN:VCARD', 'VERSION:4.0', 'FN:John Doe', 'END:VCARD'].join('\r\n'),
+      );
+    });
+
+    it('should encode vCard with all fields correctly', () => {
+      const vcard = {
+        type: 'vcard' as const,
+        version: '3.0' as const,
+        fullName: 'John Doe',
+        address: '123 Main St',
+        anniversary: new Date(2010, 5, 15),
+        birthday: new Date(1990, 0, 5),
+        calendarAddressURI: 'mailto:calendar@example.com',
+        calendarURI: 'https://example.com/calendar.ics',
+        categories: ['friend', 'colleague'],
+        clientPIDMap: '1;urn:uuid:53e374d9-337e-4727-8803-a1e9c14e0556',
+        email: 'john@example.com',
+        facebookURL: 'https://facebook.com/johndoe',
+        gender: 'M' as const,
+        geo: 'geo:37.386013,-122.082932',
+        instantMessenger: 'xmpp:john@example.com',
+        key: 'https://example.com/key.pgp',
+        kind: 'individual',
+        language: 'en',
+        logo: 'https://example.com/logo.png',
+        member: 'urn:uuid:03a0e51f-d1aa-4385-8a53-e29025acd8af',
+        name: ['Doe', 'John', '', '', ''],
+        nickname: 'Johnny',
+        note: 'A note',
+        organization: 'ACME Inc.',
+        productID: '-//Example//vCard//EN',
+        related: 'urn:uuid:f81d4fae-7dec-11d0-a765-00a0c91e6bf6',
+        role: 'Engineer',
+        sound: 'https://example.com/sound.mp3',
+        source: 'https://example.com/johndoe.vcf',
+        telephone: '+1234567890',
+        title: 'Senior Engineer',
+        timezone: 'America/New_York',
+        uid: 'urn:uuid:4fbe8971-0bc3-424c-9c26-36c3e1eff6b1',
+        url: 'https://example.com',
+        xml: '<a xmlns="http://www.w3.org/1999/xhtml" href="https://example.com">Example</a>',
+      };
+      expect(encodeQRCodeContents(vcard)).toEqual(
+        [
+          'BEGIN:VCARD',
+          'VERSION:3.0',
+          'FN:John Doe',
+          'ADR:123 Main St',
+          'ANNIVERSARY:20100615',
+          'BDAY:19900105',
+          'CALADRURI:mailto:calendar@example.com',
+          'CALURI:https://example.com/calendar.ics',
+          'CATEGORIES:friend,colleague',
+          'CLIENTPIDMAP:1;urn:uuid:53e374d9-337e-4727-8803-a1e9c14e0556',
+          'EMAIL:john@example.com',
+          'FBURL:https://facebook.com/johndoe',
+          'GENDER:M',
+          'GEO:geo:37.386013,-122.082932',
+          'IMPP:xmpp:john@example.com',
+          'KEY:https://example.com/key.pgp',
+          'KIND:individual',
+          'LANG:en',
+          'LOGO:https://example.com/logo.png',
+          'MEMBER:urn:uuid:03a0e51f-d1aa-4385-8a53-e29025acd8af',
+          'N:Doe;John;;;',
+          'NICKNAME:Johnny',
+          'NOTE:A note',
+          'ORG:ACME Inc.',
+          'PRODID:-//Example//vCard//EN',
+          'RELATED:urn:uuid:f81d4fae-7dec-11d0-a765-00a0c91e6bf6',
+          'ROLE:Engineer',
+          'SOUND:https://example.com/sound.mp3',
+          'SOURCE:https://example.com/johndoe.vcf',
+          'TEL:+1234567890',
+          'TITLE:Senior Engineer',
+          'TZ:America/New_York',
+          'UID:urn:uuid:4fbe8971-0bc3-424c-9c26-36c3e1eff6b1',
+          'URL:https://example.com',
+          'XML:<a xmlns="http://www.w3.org/1999/xhtml" href="https://example.com">Example</a>',
+          'END:VCARD',
+        ].join('\r\n'),
+      );
+    });
+
+    it('should use CRLF line endings', () => {
+      const vcard = {type: 'vcard' as const, fullName: 'John Doe'};
+      const encoded = encodeQRCodeContents(vcard);
+      expect(encoded).not.toMatch(/[^\r]\n/);
+      expect(encoded.split('\r\n')).toHaveLength(4);
+    });
+
+    it('should escape text values per RFC 6350', () => {
+      const vcard = {
+        type: 'vcard' as const,
+        fullName: 'Doe; John, Jr.\\',
+        note: 'line one\nline two',
+        organization: 'ACME, Inc.; R&D',
+      };
+      expect(encodeQRCodeContents(vcard)).toEqual(
+        [
+          'BEGIN:VCARD',
+          'VERSION:4.0',
+          'FN:Doe\\; John\\, Jr.\\\\',
+          'NOTE:line one\\nline two',
+          'ORG:ACME\\, Inc.\\; R&D',
+          'END:VCARD',
+        ].join('\r\n'),
+      );
+    });
+
+    it('should escape commas in category items', () => {
+      const vcard = {
+        type: 'vcard' as const,
+        fullName: 'John Doe',
+        categories: ['friends, family', 'work'],
+      };
+      expect(encodeQRCodeContents(vcard)).toContain(
+        'CATEGORIES:friends\\, family,work',
+      );
+    });
+
+    it('should join name components with semicolons', () => {
+      const vcard = {
+        type: 'vcard' as const,
+        fullName: 'John Doe',
+        name: ['Doe', 'John', 'Quinlan', 'Mr.', 'Esq.'],
+      };
+      expect(encodeQRCodeContents(vcard)).toContain(
+        'N:Doe;John;Quinlan;Mr.;Esq.',
+      );
+    });
+
+    it('should pass a preformatted name string through as-is', () => {
+      const vcard = {
+        type: 'vcard' as const,
+        fullName: 'John Doe',
+        name: 'Doe;John;;;',
+      };
+      expect(encodeQRCodeContents(vcard)).toContain('N:Doe;John;;;');
+    });
+
+    it('should format birthday and anniversary as YYYYMMDD', () => {
+      const vcard = {
+        type: 'vcard' as const,
+        fullName: 'John Doe',
+        birthday: new Date(1985, 2, 9),
+        anniversary: new Date(2012, 9, 1),
+      };
+      const encoded = encodeQRCodeContents(vcard);
+      expect(encoded).toContain('BDAY:19850309');
+      expect(encoded).toContain('ANNIVERSARY:20121001');
+    });
+  });
+
+  describe('CalendarEvent QRCodeContents', () => {
+    it('should encode calendar event with minimal fields correctly', () => {
+      const event = {
+        type: 'calendar-event' as const,
+        uid: 'event-1',
+        dtStart: new Date(Date.UTC(2024, 0, 1, 10, 0, 0)),
+      };
+      expect(encodeQRCodeContents(event)).toEqual(
+        [
+          'BEGIN:VCALENDAR',
+          'VERSION:2.0',
+          'PRODID:-//react-native-qrcode-composer//EN',
+          'BEGIN:VEVENT',
+          'UID:event-1',
+          'DTSTART:20240101T100000Z',
+          'END:VEVENT',
+          'END:VCALENDAR',
+        ].join('\r\n'),
+      );
+    });
+
+    it('should encode calendar event with all fields correctly', () => {
+      const event = {
+        type: 'calendar-event' as const,
+        uid: 'event-1',
+        dtStart: new Date(Date.UTC(2024, 0, 1, 10, 0, 0)),
+        dtEnd: new Date(Date.UTC(2024, 0, 1, 11, 30, 0)),
+        summary: 'Team meeting',
+        description: 'Quarterly planning',
+        location: 'Room 101',
+        url: 'https://example.com/meeting',
+        geo: '37.386013;-122.082932',
+        categories: ['work', 'planning'],
+        status: 'CONFIRMED' as const,
+        transp: 'OPAQUE' as const,
+        organizer: 'mailto:boss@example.com',
+        attach: 'https://example.com/agenda.pdf',
+        priority: 5,
+        rrule: 'FREQ=WEEKLY;BYDAY=MO',
+        sequence: 2,
+        class: 'PRIVATE' as const,
+      };
+      expect(encodeQRCodeContents(event)).toEqual(
+        [
+          'BEGIN:VCALENDAR',
+          'VERSION:2.0',
+          'PRODID:-//react-native-qrcode-composer//EN',
+          'BEGIN:VEVENT',
+          'UID:event-1',
+          'DTSTART:20240101T100000Z',
+          'DTEND:20240101T113000Z',
+          'SUMMARY:Team meeting',
+          'DESCRIPTION:Quarterly planning',
+          'LOCATION:Room 101',
+          'URL:https://example.com/meeting',
+          'GEO:37.386013;-122.082932',
+          'CATEGORIES:work,planning',
+          'STATUS:CONFIRMED',
+          'TRANSP:OPAQUE',
+          'ORGANIZER:mailto:boss@example.com',
+          'ATTACH:https://example.com/agenda.pdf',
+          'PRIORITY:5',
+          'RRULE:FREQ=WEEKLY;BYDAY=MO',
+          'SEQUENCE:2',
+          'CLASS:PRIVATE',
+          'END:VEVENT',
+          'END:VCALENDAR',
+        ].join('\r\n'),
+      );
+    });
+
+    it('should prefer DTEND over DURATION when both are provided', () => {
+      const event = {
+        type: 'calendar-event' as const,
+        uid: 'event-1',
+        dtStart: new Date(Date.UTC(2024, 0, 1, 10, 0, 0)),
+        dtEnd: new Date(Date.UTC(2024, 0, 1, 11, 0, 0)),
+        duration: 'PT1H',
+      };
+      const encoded = encodeQRCodeContents(event);
+      expect(encoded).toContain('DTEND:20240101T110000Z');
+      expect(encoded).not.toContain('DURATION');
+    });
+
+    it('should encode DURATION when DTEND is not provided', () => {
+      const event = {
+        type: 'calendar-event' as const,
+        uid: 'event-1',
+        dtStart: new Date(Date.UTC(2024, 0, 1, 10, 0, 0)),
+        duration: 'PT1H',
+      };
+      const encoded = encodeQRCodeContents(event);
+      expect(encoded).toContain('DURATION:PT1H');
+      expect(encoded).not.toContain('DTEND');
+    });
+
+    it('should escape text values per RFC 5545', () => {
+      const event = {
+        type: 'calendar-event' as const,
+        uid: 'event;1',
+        dtStart: new Date(Date.UTC(2024, 0, 1, 10, 0, 0)),
+        summary: 'Lunch; with, friends\\',
+        description: 'line one\nline two',
+      };
+      const encoded = encodeQRCodeContents(event);
+      expect(encoded).toContain('UID:event\\;1');
+      expect(encoded).toContain('SUMMARY:Lunch\\; with\\, friends\\\\');
+      expect(encoded).toContain('DESCRIPTION:line one\\nline two');
+    });
+
+    it('should use CRLF line endings', () => {
+      const event = {
+        type: 'calendar-event' as const,
+        uid: 'event-1',
+        dtStart: new Date(Date.UTC(2024, 0, 1, 10, 0, 0)),
+      };
+      const encoded = encodeQRCodeContents(event);
+      expect(encoded).not.toMatch(/[^\r]\n/);
+    });
+
+    it('should clamp priority to the 0-9 range', () => {
+      const event = {
+        type: 'calendar-event' as const,
+        uid: 'event-1',
+        dtStart: new Date(Date.UTC(2024, 0, 1, 10, 0, 0)),
+        priority: 15,
+      };
+      expect(encodeQRCodeContents(event)).toContain('PRIORITY:9');
+    });
+  });
 });

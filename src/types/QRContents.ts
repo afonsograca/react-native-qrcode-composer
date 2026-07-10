@@ -39,6 +39,24 @@ export const encodeQRCodeContents = (contents: QRCodeContents): string => {
   }
 };
 
+// WIFI: and MECARD: values backslash-escape their delimiter characters
+const escapeDelimiters = (value: string): string =>
+  value.replace(/([\\;,:"])/g, '\\$1');
+
+// TEXT escaping per RFC 6350 §3.4 and RFC 5545 §3.3.11
+const escapeTextValue = (value: string): string =>
+  value.replace(/([\\;,])/g, '\\$1').replace(/\r\n|\r|\n/g, '\\n');
+
+type FieldValue = string | undefined;
+
+const encodeField = <T>(
+  value: T | undefined,
+  format: (value: T) => string,
+): FieldValue => (value != null ? format(value) : undefined);
+
+const encodeFieldLines = (fields: [string, FieldValue][]): string[] =>
+  fields.flatMap(([key, value]) => (value != null ? [`${key}:${value}`] : []));
+
 const encodeEmailContents = (contents: Email): string => {
   const subject =
     contents.subject != null
@@ -58,10 +76,6 @@ const encodePhoneNumber = (phoneNumber: string): string =>
 const encodeSMSContents = (contents: SMS): string =>
   `SMSTO:${encodePhoneNumber(contents.phoneNumber)}:${contents.message != null ? encodeURIComponent(contents.message) : ''}`;
 
-// WIFI: values backslash-escape their delimiter characters
-const escapeDelimiters = (value: string): string =>
-  value.replace(/([\\;,:"])/g, '\\$1');
-
 const encodeWiFiContents = (contents: WiFi): string =>
   `WIFI:T:${contents.security};S:${escapeDelimiters(contents.ssid)}` +
   (contents.password != null
@@ -77,130 +91,127 @@ const encodeGeolocationContents = (contents: Geolocation): string =>
     : '');
 
 const encodeVCardContents = (contents: VCard): string => {
-  let vcard = 'BEGIN:VCARD\n';
-  vcard += `VERSION:${contents.version ?? '4.0'}\n`;
-  vcard += `FN:${contents.fullName}\n`;
-  if (contents.address != null) {
-    vcard += `ADR:${contents.address}\n`;
-  }
-  if (contents.anniversary != null) {
-    vcard += `ANNIVERSARY:${contents.anniversary}\n`;
-  }
-  if (contents.birthday != null) {
-    vcard += `BDAY:${contents.birthday}\n`;
-  }
-  if (contents.calendarAddressURI != null) {
-    vcard += `CALADRURI:${contents.calendarAddressURI}\n`;
-  }
-  if (contents.calendarURI != null) {
-    vcard += `CALURI:${contents.calendarURI}\n`;
-  }
-  if (contents.categories != null) {
-    vcard += `CATEGORIES:${contents.categories.join(',')}\n`;
-  }
-  if (contents.clientPIDMap != null) {
-    vcard += `CLIENTPIDMAP:${contents.clientPIDMap}\n`;
-  }
-  if (contents.email != null) {
-    vcard += `EMAIL:${contents.email}\n`;
-  }
-  if (contents.facebookURL != null) {
-    vcard += `FBURL:${contents.facebookURL}\n`;
-  }
-  vcard += 'END:VCARD';
-  return vcard;
+  const fields: [string, FieldValue][] = [
+    ['VERSION', contents.version ?? '4.0'],
+    ['FN', escapeTextValue(contents.fullName)],
+    ['ADR', encodeField(contents.address, escapeTextValue)],
+    ['ANNIVERSARY', encodeField(contents.anniversary, formatDateToYYYYMMDD)],
+    ['BDAY', encodeField(contents.birthday, formatDateToYYYYMMDD)],
+    ['CALADRURI', contents.calendarAddressURI],
+    ['CALURI', contents.calendarURI],
+    [
+      'CATEGORIES',
+      encodeField(contents.categories, categories =>
+        categories.map(escapeTextValue).join(','),
+      ),
+    ],
+    ['CLIENTPIDMAP', contents.clientPIDMap],
+    ['EMAIL', encodeField(contents.email, escapeTextValue)],
+    ['FBURL', contents.facebookURL],
+    ['GENDER', contents.gender],
+    ['GEO', contents.geo],
+    ['IMPP', contents.instantMessenger],
+    ['KEY', contents.key],
+    ['KIND', encodeField(contents.kind, escapeTextValue)],
+    ['LANG', encodeField(contents.language, escapeTextValue)],
+    ['LOGO', contents.logo],
+    ['MEMBER', contents.member],
+    [
+      'N',
+      encodeField(contents.name, name =>
+        Array.isArray(name) ? name.map(escapeTextValue).join(';') : name,
+      ),
+    ],
+    ['NICKNAME', encodeField(contents.nickname, escapeTextValue)],
+    ['NOTE', encodeField(contents.note, escapeTextValue)],
+    ['ORG', encodeField(contents.organization, escapeTextValue)],
+    ['PRODID', encodeField(contents.productID, escapeTextValue)],
+    ['RELATED', encodeField(contents.related, escapeTextValue)],
+    ['ROLE', encodeField(contents.role, escapeTextValue)],
+    ['SOUND', contents.sound],
+    ['SOURCE', contents.source],
+    ['TEL', encodeField(contents.telephone, escapeTextValue)],
+    ['TITLE', encodeField(contents.title, escapeTextValue)],
+    ['TZ', encodeField(contents.timezone, escapeTextValue)],
+    ['UID', encodeField(contents.uid, escapeTextValue)],
+    ['URL', contents.url],
+    ['XML', contents.xml],
+  ];
+
+  return ['BEGIN:VCARD', ...encodeFieldLines(fields), 'END:VCARD'].join('\r\n');
 };
 
 const encodeMeCardContents = (contents: MeCard): string => {
-  let mecard = 'MeCard:';
-  mecard += `N:${encodeURIComponent(contents.lastName)},${encodeURIComponent(contents.firstName)};`;
-  if (contents.nickname != null) {
-    mecard += `${encodeURIComponent(contents.nickname)};`;
-  }
-  if (contents.telephone != null) {
-    mecard += `TEL:${encodeURIComponent(contents.telephone)};`;
-  }
-  if (contents.email != null) {
-    mecard += `EMAIL:${encodeURIComponent(contents.email)};`;
-  }
-  if (contents.birthday != null) {
-    mecard += `BDAY:${formatDateToYYYYMMDD(contents.birthday)};`;
-  }
-  if (contents.address != null) {
-    mecard += `ADR:${encodeURIComponent(contents.address)};`;
-  }
-  if (contents.sound != null) {
-    mecard += `SOUND:${encodeURIComponent(contents.sound)};`;
-  }
-  if (contents.website != null) {
-    mecard += `URL:${encodeURIComponent(contents.website)};`;
-  }
-  if (contents.note != null) {
-    mecard += `NOTE:${encodeURIComponent(contents.note)};`;
-  }
-  if (contents.videoCall != null) {
-    mecard += `VIDEO:${encodeURIComponent(contents.videoCall)};`;
-  }
-  mecard += ';';
+  const fields: [string, FieldValue][] = [
+    [
+      'N',
+      `${escapeDelimiters(contents.lastName)},${escapeDelimiters(contents.firstName)}`,
+    ],
+    ['NICKNAME', encodeField(contents.nickname, escapeDelimiters)],
+    ['TEL', encodeField(contents.telephone, escapeDelimiters)],
+    ['EMAIL', encodeField(contents.email, escapeDelimiters)],
+    ['BDAY', encodeField(contents.birthday, formatDateToYYYYMMDD)],
+    ['ADR', encodeField(contents.address, escapeDelimiters)],
+    ['SOUND', encodeField(contents.sound, escapeDelimiters)],
+    ['URL', encodeField(contents.website, escapeDelimiters)],
+    ['NOTE', encodeField(contents.note, escapeDelimiters)],
+    ['VIDEO', encodeField(contents.videoCall, escapeDelimiters)],
+  ];
 
-  return mecard;
+  return `MECARD:${encodeFieldLines(fields)
+    .map(line => `${line};`)
+    .join('')};`;
 };
 
 const encodeCalendarEventContents = (contents: CalendarEvent): string => {
-  let event = 'BEGIN:VEVENT\n';
-  event += `UID:${encodeURIComponent(contents.uid)}\n`;
-  event += `DTSTART:${formatDateTimeToICalendarFormat(contents.dtStart)}\n`;
-  if (contents.dtEnd != null) {
-    event += `DTEND:${formatDateTimeToICalendarFormat(contents.dtEnd)}\n`;
-  }
-  if (contents.dtEnd == null && contents.duration != null) {
-    event += `DURATION:${encodeURIComponent(contents.duration)}\n`;
-  }
-  if (contents.summary != null) {
-    event += `SUMMARY:${encodeURIComponent(contents.summary)}\n`;
-  }
-  if (contents.description != null) {
-    event += `DESCRIPTION:${encodeURIComponent(contents.description)}\n`;
-  }
-  if (contents.location != null) {
-    event += `LOCATION:${encodeURIComponent(contents.location)}\n`;
-  }
-  if (contents.url != null) {
-    event += `URL:${encodeURIComponent(contents.url)}\n`;
-  }
-  if (contents.geo != null) {
-    event += `GEO:${contents.geo}\n`;
-  }
-  if (contents.categories != null) {
-    event += `CATEGORIES:${contents.categories.join(',')}\n`;
-  }
-  if (contents.status != null) {
-    event += `STATUS:${contents.status}\n`;
-  }
-  if (contents.transp != null) {
-    event += `TRANSP:${contents.transp}\n`;
-  }
-  if (contents.organizer != null) {
-    event += `ORGANIZER:${encodeURIComponent(contents.organizer)}\n`;
-  }
-  if (contents.attach != null) {
-    event += `ATTACH:${contents.attach}\n`;
-  }
-  if (contents.priority != null) {
-    const priority = Math.min(Math.max(contents.priority, 0), 9).toString();
-    event += `PRIORITY:${priority}\n`;
-  }
-  if (contents.rrule != null) {
-    event += `RRULE:${contents.rrule}\n`;
-  }
-  if (contents.sequence != null) {
-    event += `SEQUENCE:${contents.sequence.toString()}\n`;
-  }
-  if (contents.class != null) {
-    event += `CLASS:${contents.class}\n`;
-  }
-  event += 'END:VEVENT';
-  return event;
+  const fields: [string, FieldValue][] = [
+    ['UID', escapeTextValue(contents.uid)],
+    ['DTSTART', formatDateTimeToICalendarFormat(contents.dtStart)],
+    ['DTEND', encodeField(contents.dtEnd, formatDateTimeToICalendarFormat)],
+    [
+      'DURATION',
+      contents.dtEnd == null
+        ? encodeField(contents.duration, escapeTextValue)
+        : undefined,
+    ],
+    ['SUMMARY', encodeField(contents.summary, escapeTextValue)],
+    ['DESCRIPTION', encodeField(contents.description, escapeTextValue)],
+    ['LOCATION', encodeField(contents.location, escapeTextValue)],
+    ['URL', contents.url],
+    ['GEO', contents.geo],
+    [
+      'CATEGORIES',
+      encodeField(contents.categories, categories =>
+        categories.map(escapeTextValue).join(','),
+      ),
+    ],
+    ['STATUS', contents.status],
+    ['TRANSP', contents.transp],
+    ['ORGANIZER', encodeField(contents.organizer, escapeTextValue)],
+    ['ATTACH', contents.attach],
+    [
+      'PRIORITY',
+      encodeField(contents.priority, priority =>
+        Math.min(Math.max(priority, 0), 9).toString(),
+      ),
+    ],
+    ['RRULE', contents.rrule],
+    [
+      'SEQUENCE',
+      encodeField(contents.sequence, sequence => sequence.toString()),
+    ],
+    ['CLASS', contents.class],
+  ];
+
+  return [
+    'BEGIN:VCALENDAR',
+    'VERSION:2.0',
+    'PRODID:-//react-native-qrcode-composer//EN',
+    'BEGIN:VEVENT',
+    ...encodeFieldLines(fields),
+    'END:VEVENT',
+    'END:VCALENDAR',
+  ].join('\r\n');
 };
 
 interface PlainText {
@@ -253,8 +264,8 @@ interface VCard {
   type: 'vcard';
   version?: '2.1' | '3.0' | '4.0';
   address?: string;
-  anniversary?: string;
-  birthday?: string;
+  anniversary?: Date;
+  birthday?: Date;
   calendarAddressURI?: string;
   calendarURI?: string;
   categories?: string[];
