@@ -17,6 +17,14 @@
     "ghcr.io/devcontainers-extra/features/mise:1": {},
     "ghcr.io/devcontainers-extra/features/claude-code:2": {}
   },
+  "forwardPorts": [8081],
+  "portsAttributes": {
+    "8081": {
+      "label": "Metro",
+      "onAutoForward": "notify",
+      "protocol": "http"
+    }
+  },
   "customizations": {
     "vscode": {
       "settings": {
