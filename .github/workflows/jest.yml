@@ -30,7 +30,7 @@ jobs:
         run: yarn lint
 
       - name: Typecheck
-        run: yarn build
+        run: yarn typecheck
 
       - name: Run Jest tests
         run: yarn test
