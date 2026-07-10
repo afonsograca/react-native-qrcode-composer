@@ -39,7 +39,7 @@ const createQRMatrix = (
 ): number[][] => {
   const qrData = QRCode.create(value, {errorCorrectionLevel});
   const arr = [...qrData.modules.data];
-  const size = Math.sqrt(arr.length);
+  const size = qrData.modules.size;
   return Array.from({length: size}, (_, rowIndex) => {
     return arr.slice(rowIndex * size, (rowIndex + 1) * size);
   });
@@ -250,14 +250,33 @@ export const useQRMatrix = ({
   detectionMarkerOptions,
   patternOptions,
 }: QRCodeOptions): Result<PathResult> => {
+  // Depend on the primitive fields so inline style objects with the same
+  // values do not invalidate the memo on every parent render.
+  const {
+    connected: markerConnected,
+    cornerRadius: markerCornerRadius,
+    outerCornerRadius: markerOuterCornerRadius,
+    innerCornerRadius: markerInnerCornerRadius,
+  } = detectionMarkerOptions ?? {};
+  const {connected: patternConnected, cornerRadius: patternCornerRadius} =
+    patternOptions ?? {};
+
   return useMemo(() => {
     try {
       const matrix = createQRMatrix(value, errorCorrectionLevel);
       const pathResult = generatePathFromMatrix(
         matrix,
         size,
-        detectionMarkerOptions,
-        patternOptions,
+        {
+          connected: markerConnected,
+          cornerRadius: markerCornerRadius,
+          outerCornerRadius: markerOuterCornerRadius,
+          innerCornerRadius: markerInnerCornerRadius,
+        },
+        {
+          connected: patternConnected,
+          cornerRadius: patternCornerRadius,
+        },
       );
       return {status: 'success', value: pathResult};
     } catch (error) {
@@ -273,7 +292,11 @@ export const useQRMatrix = ({
     value,
     size,
     errorCorrectionLevel,
-    detectionMarkerOptions,
-    patternOptions,
+    markerConnected,
+    markerCornerRadius,
+    markerOuterCornerRadius,
+    markerInnerCornerRadius,
+    patternConnected,
+    patternCornerRadius,
   ]);
 };
